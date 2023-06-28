@@ -1,0 +1,95 @@
+<div class="flex flex-col flex-auto min-w-0 bg-card dark:bg-transparent">
+
+    <!-- Header -->
+    <div
+        class="flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between p-6 sm:py-8 sm:px-10 border-b bg-card dark:bg-transparent">
+        <div class="flex-1 min-w-0">
+            <!-- Title -->
+            <div class="mt-2">
+                <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
+                    เพิ่มชั้นวาง
+                </h2>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Main -->
+    <div class="flex-auto p-3 sm:p-10">
+        <form class="flex flex-col mt-3 p-8 pb-4 bg-card shadow overflow-hidden ng-valid" [formGroup]="formData">
+            <div class="flex flex-col sm:flex-row p-8">
+                <div class="flex flex-auto flex-wrap">
+                    <div class="flex flex-col w-full lg:w-4/4 p-3">
+                        <mat-form-field class="w-full">
+                            <mat-label>ชื่อชั้นวาง
+                            </mat-label>
+                            <input matInput [formControlName]="'name'">
+                        </mat-form-field>
+                    </div>
+
+                    <div class="flex flex-col w-full lg:w-4/4 p-3">
+                        <mat-form-field class="w-full">
+                            <mat-label>รายละเอียด
+                            </mat-label>
+                            <input matInput [formControlName]="'detail'">
+                        </mat-form-field>
+                    </div>
+
+                </div>
+            </div>
+            <!-- button -->
+            <div class="flex items-center justify-end w-full border-t px-8 py-4">
+                <div class="flex items-center justify-end">
+                    <a class="ml-4" mat-flat-button href="gift-voucher/list">
+                        <mat-icon svgIcon="heroicons_solid:x"></mat-icon>
+                        ยกเลิก
+                    </a>
+                    <button class="px-6 ml-3 mat-primary" mat-flat-button (click)="createCoupon()">
+                        <mat-icon svgIcon="heroicons_solid:check"></mat-icon>
+                        ยืนยัน
+                    </button>
+                </div>
+            </div>
+        </form>
+
+    </div>
+    <div class="flex flex-auto overflow-hidden">
+        <!-- Products list -->
+        <div class="flex flex-col flex-auto p-5 overflow-hidden sm:overflow-y-auto">
+            <!-- Products list -->
+            <div class="flex flex-col flex-auto p-5 overflow-hidden sm:overflow-y-auto ">
+                <table datatable [dtOptions]="dtOptions" class="table row-border hover">
+                    <thead>
+                        <tr>
+                            <th>ลำดับ</th>
+                            <th style="width:30%;">ชื่อชั้นวาง</th>
+                            <th>รายละเอียด</th>
+                            <th>ลบ</th>
+                        </tr>
+                    </thead>
+                    <tbody *ngIf="dataRow?.length != 0">
+                        <ng-container *ngFor="let item of dataRow; let i = index">
+                            <tr *ngIf="item.gift_voucher_id == this.id">
+                                <!-- <td style="width: 5%;">{{ pages.begin + (i + 1) }}</td> -->
+                                <td>{{ item.No }}</td>
+                                <td>{{ item.name }}</td>
+                                <td>{{ item.detail }}</td>
+                                <td>
+                                    <button mat-button (click)="DeleteCoupon(item.id)">
+                                        <mat-icon svgIcon="heroicons_solid:trash"></mat-icon>
+                                    </button>
+                                </td>
+                            </tr>   
+                        </ng-container>
+                
+                    </tbody>
+                    <tbody *ngIf="dataRow?.length == 0">
+                        <tr>
+                            <td colspan="9" class="no-data-available text-center">ไม่มีข้อมูล !</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

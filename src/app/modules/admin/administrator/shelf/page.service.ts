@@ -810,6 +810,47 @@ export class Service {
             )
         );
     }
+    getCodePage(dataTablesParameters: any): Observable<DataTablesResponse> {
+        return this._httpClient.post(environment.API_URL + '/api/floor_page', dataTablesParameters, this.httpOptionsFormdata).pipe(
+          switchMap((response: any) => {
+            return of(response.data);
+          })
+        );
+      }
+    
+    createChannel(data: any): Observable<any> {
+        return this._httpClient
+            .post(
+                environment.API_URL + '/api/gift_voucher_code',
+                data,
+                this.httpOptionsFormdata
+            )
+            .pipe(
+                switchMap((response: any) => {
+                    // Return a new observable with the response
+                    return of(response);
+                })
+            );
+    }
+    getCouponType(): Observable<any[]> {
+        return this._httpClient.post<any[]>(environment.API_URL + '/api/get_gift_voucher',{status:1},this.httpOptionsFormdata).pipe(
+          tap((meterial) => {
+            this._materials.next(meterial);
+          })
+        );
+      }
+    deleteCoupon(id: any): Observable<any> {
+        return this._httpClient.delete<any>(
+            environment.API_URL + '/api/gift_voucher_code/' + id,
+            { headers: this.httpOptionsFormdata.headers }
+        );
+    }
+    // delete(id: any): Observable<any> {
+    //     return this._httpClient.delete<any>(
+    //         environment.API_URL + '/api/gift_voucher/' + id,
+    //         { headers: this.httpOptionsFormdata.headers }
+    //     );
+    // }
 
     commentOSM(data: any): Observable<any> {
         return this._httpClient
@@ -1243,7 +1284,7 @@ export class Service {
     //* get position by id
     getById(id: any): Observable<any[]> {
         return this._httpClient
-            .get<any[]>(environment.API_URL + '/api/blog/' + id)
+            .get<any[]>(environment.API_URL + '/api/shelf/' + id)
             .pipe(
                 tap((meterial) => {
                     this._materials.next(meterial);

@@ -4,7 +4,7 @@
 
 export const environment = {
     production: false,
-    API_URL: 'http://localhost:9080/stock-api/public',
+    API_URL: 'https://nppolymers.com/api/public',
 };
 
 /*

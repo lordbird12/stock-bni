@@ -33,37 +33,27 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { environment } from 'environments/environment';
 import { AuthService } from 'app/core/auth/auth.service';
 import { sortBy, startCase } from 'lodash-es';
-import { AssetType, DataPosition, Pagination } from '../page.types';
+import { AssetType,  } from '../page.types';
 import { Service } from '../page.service';
-import { MatTableDataSource } from '@angular/material/table';
-import { PictureComponent } from 'app/modules/admin/picture/picture.component';
+// import { ImportOSMComponent } from '../card/import-osm/import-osm.component';
 
 @Component({
-    selector: 'list',
-    templateUrl: './list.component.html',
-    styleUrls: ['./list.component.scss'],
-    // encapsulation: ViewEncapsulation.None,
-    // changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'add',
+    templateUrl: './add.component.html',
+    styleUrls: ['./add.component.scss'],
+
     animations: fuseAnimations,
 })
-export class ListComponent implements OnInit, AfterViewInit, OnDestroy {
-    public dtOptions: DataTables.Settings = {};
-    public dataRow: any[];
-    public dataGrid: any[];
-    @ViewChild(MatPaginator) _paginator: MatPaginator;
+export class AddComponent implements OnInit, AfterViewInit, OnDestroy {
+    @ViewChild(MatPaginator) private _paginator: MatPaginator;
     @ViewChild(MatSort) private _sort: MatSort;
-    displayedColumns: string[] = [
-        'id',
-        'name',
-        'status',
-        'create_by',
-        'created_at',
-        'actions',
-    ];
-    dataSource: MatTableDataSource<DataPosition>;
-
-    products$: Observable<any>;
-    asset_types: AssetType[];
+    // @ViewChild(DataTableDirective)
+    // dtElement!: DataTableDirective;
+    dtOptions: DataTables.Settings = {};
+    dataRow: any = [];
+    private destroy$ = new Subject<any>();
+    formData: FormGroup;
+    flashErrorMessage: string;
     flashMessage: 'success' | 'error' | null = null;
     isLoading: boolean = false;
     searchInputControl: FormControl = new FormControl();
@@ -73,14 +63,15 @@ export class ListComponent implements OnInit, AfterViewInit, OnDestroy {
     private _unsubscribeAll: Subject<any> = new Subject<any>();
     env_path = environment.API_URL;
 
-    me: any | null;
-    get roleType(): string {
-        return 'marketing';
-    }
+    ClassData: any;
 
     supplierId: string | null;
-    pagination: Pagination;
-
+    // pagination: PositionPagination;
+    id: string;
+    itemData: any = [];
+    files: File[] = [];
+    AddCouponType: any = [];
+    
     /**
      * Constructor
      */
@@ -88,13 +79,20 @@ export class ListComponent implements OnInit, AfterViewInit, OnDestroy {
         private _changeDetectorRef: ChangeDetectorRef,
         private _fuseConfirmationService: FuseConfirmationService,
         private _formBuilder: FormBuilder,
-        // private _Service: PermissionService,
         private _Service: Service,
         private _matDialog: MatDialog,
         private _router: Router,
         private _activatedRoute: ActivatedRoute,
         private _authService: AuthService
-    ) {}
+    ) {
+        {
+            this.formData = this._formBuilder.group({
+                id: '',
+                name: '',
+                status: '',
+            });
+        }
+    }
 
     // -----------------------------------------------------------------------------------------------------
     // @ Lifecycle hooks
@@ -104,13 +102,23 @@ export class ListComponent implements OnInit, AfterViewInit, OnDestroy {
      * On init
      */
     ngOnInit(): void {
-        this._Service.getAll().subscribe((resp) => {
-            this.dataGrid = resp.data;
-            // this.totalSummary = this.totalPrice();
-            // this.totalRows = this.totalTrans();
-            this._changeDetectorRef.markForCheck();
-        });
         this.loadTable();
+        this.formData = this._formBuilder.group({
+            name: '',
+            detail: '',
+            shelve_id: '',
+        });
+
+        this.id = this._activatedRoute.snapshot.paramMap.get('id');
+        this._Service.getById(this.id).subscribe((resp: any) => {
+            this.itemData = resp.data;
+            this.formData.patchValue({
+                id: this.itemData.id,
+                name: this.itemData.name,
+                shelve_id:this.id,
+            });
+            console.log(this.id)
+        });
     }
 
     pages = { current_page: 1, last_page: 1, per_page: 10, begin: 0 };
@@ -127,7 +135,7 @@ export class ListComponent implements OnInit, AfterViewInit, OnDestroy {
             },
             ajax: (dataTablesParameters: any, callback) => {
                 that._Service
-                    .getPage(dataTablesParameters)
+                    .getCodePage(dataTablesParameters)
                     .subscribe((resp) => {
                         this.dataRow = resp.data;
                         this.pages.current_page = resp.current_page;
@@ -149,17 +157,15 @@ export class ListComponent implements OnInit, AfterViewInit, OnDestroy {
                     });
             },
             columns: [
-                { data: 'no' },
+                { data: 'No' },
                 { data: 'name' },
-                { data: 'name' },
-                { data: 'name' },
-                { data: 'name' },
-                { data: 'name' },
-                { data: 'created_at' },
+                { data: 'detail' },
                 { data: 'action' },
+            
             ],
         };
     }
+    discard(): void {}
 
     /**
      * After view init
@@ -171,49 +177,83 @@ export class ListComponent implements OnInit, AfterViewInit, OnDestroy {
      */
     ngOnDestroy(): void {
         // Unsubscribe from all subscriptions
-        this._unsubscribeAll.next(null);
-        this._unsubscribeAll.complete();
     }
 
-    // -----------------------------------------------------------------------------------------------------
-    // @ Public methods
-    // -----------------------------------------------------------------------------------------------------
-
-    showPicture(imgObject: any): void {
-        this._matDialog
-            .open(PictureComponent, {
-                autoFocus: false,
-                data: {
-                    imgSelected: imgObject,
+    createCoupon(): void {
+        this.flashMessage = null;
+        this.flashErrorMessage = null;
+        // Return if the form is invalid
+        // if (this.formData.invalid) {
+        //     return;
+        // }
+        // Open the confirmation dialog
+        const confirmation = this._fuseConfirmationService.open({
+            title: 'สร้างรายการใหม่',
+            message: 'คุณต้องการสร้างรายการใหม่ใช่หรือไม่ ',
+            icon: {
+                show: false,
+                name: 'heroicons_outline:exclamation',
+                color: 'warning',
+            },
+            actions: {
+                confirm: {
+                    show: true,
+                    label: 'ยืนยัน',
+                    color: 'primary',
                 },
-            })
-            .afterClosed()
-            .subscribe(() => {
-                // Go up twice because card routes are setup like this; "card/CARD_ID"
-                // this._router.navigate(['./../..'], {relativeTo: this._activatedRoute});
-            });
+                cancel: {
+                    show: true,
+                    label: 'ยกเลิก',
+                },
+            },
+            dismissible: true,
+        });
+
+        // Subscribe to the confirmation dialog closed action
+        confirmation.afterClosed().subscribe((result) => {
+            // If the confirm button pressed...
+            if (result === 'confirmed') {
+                const formData = new FormData();
+                Object.entries(this.formData.value).forEach(
+                    ([key, value]: any[]) => {
+                        formData.append(key, value);
+                    }
+                );
+
+                this._Service.createChannel(formData).subscribe({
+                    next: (resp: any) => {
+                        this.showFlashMessage('success');
+                        window.location.reload()
+                    },
+                    error: (err: any) => {
+                        this._fuseConfirmationService.open({
+                            title: 'กรุณาระบุข้อมูล',
+                            message: err.error.message,
+                            icon: {
+                                show: true,
+                                name: 'heroicons_outline:exclamation',
+                                color: 'warning',
+                            },
+                            actions: {
+                                confirm: {
+                                    show: false,
+                                    label: 'ยืนยัน',
+                                    color: 'primary',
+                                },
+                                cancel: {
+                                    show: false,
+                                    label: 'ยกเลิก',
+                                },
+                            },
+                            dismissible: true,
+                        });
+                        console.log(err.error.message);
+                    },
+                });
+            }
+        });
     }
 
-    resetForm(): void {
-        this.filterForm.reset();
-        this.filterForm.get('asset_type').setValue('default');
-        this._changeDetectorRef.markForCheck();
-    }
-
-    /**
-     * Close the details
-     */
-    closeDetails(): void {
-        this.selectedProduct = null;
-    }
-    add(id: string): void {
-        this._router.navigate(['shelf/add/' + id]);
-    }
-    openDetail(item: any): void {}
-
-    /**
-     * Show flash message
-     */
     showFlashMessage(type: 'success' | 'error'): void {
         // Show the message
         this.flashMessage = type;
@@ -229,12 +269,7 @@ export class ListComponent implements OnInit, AfterViewInit, OnDestroy {
             this._changeDetectorRef.markForCheck();
         }, 3000);
     }
-
-    edit(id: string): void {
-        this._router.navigate(['announcement/edit/' + id]);
-    }
-
-    delete(id: any): void {
+    DeleteCoupon(id: any): void {
         this.flashMessage = null;
 
         // Open the confirmation dialog
@@ -259,12 +294,9 @@ export class ListComponent implements OnInit, AfterViewInit, OnDestroy {
             },
             dismissible: true,
         });
-
-        // Subscribe to the confirmation dialog closed action
         confirmation.afterClosed().subscribe((result) => {
-            // If the confirm button pressed...
             if (result === 'confirmed') {
-                this._Service.delete(id).subscribe({
+                this._Service.deleteCoupon(id).subscribe({
                     next: (resp: any) => {
                         location.reload();
                     },
@@ -296,8 +328,22 @@ export class ListComponent implements OnInit, AfterViewInit, OnDestroy {
             }
         });
     }
+    
+    onSelect(event) {
+        this.files.push(...event.addedFiles);
+        // Trigger Image Preview
+        setTimeout(() => {
+            this._changeDetectorRef.detectChanges();
+        }, 150);
+        this.formData.patchValue({
+            image: this.files[0],
+        });
+    }
 
-    textStatus(status: string): string {
-        return startCase(status);
+    onRemove(event) {
+        this.files.splice(this.files.indexOf(event), 1);
+        this.formData.patchValue({
+            image: '',
+        });
     }
 }
