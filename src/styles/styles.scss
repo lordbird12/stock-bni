@@ -1,0 +1,26 @@
+/* ----------------------------------------------------------------------------------------------------- */
+
+
+/*  @ Import/write your custom styles here.
+/*  @ Styles from this file will override 'vendors.scss' and Fuse's base styles.
+/* ----------------------------------------------------------------------------------------------------- */
+
+.search-box {
+    .mat-form-field-wrapper {
+        .mat-form-field-flex {
+            border-width: 0px !important;
+            @apply shadow-none #{'!important'};
+        }
+    }
+    button {
+        border: 0px;
+    }
+}
+
+.mat-flat-button {
+    .mat-primary {
+        background-color: #1ca9df!important;
+    }
+}
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

@@ -1,0 +1,155 @@
+<div class="sm:absolute sm:inset-0 flex flex-col flex-auto min-w-0 sm:overflow-hidden bg-card dark:bg-transparent">
+    <!-- Header -->
+    <div class="relative flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between py-8 px-6 md:px-8 border-b">
+        <!-- Loader -->
+        <div class="absolute inset-x-0 bottom-0" *ngIf="isLoading">
+            <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
+        </div>
+        <!-- Title -->
+        <div class="text-4xl font-extrabold tracking-tight">ตู้เก็บแม่พิมพ์</div>
+        <!-- Actions -->
+        <div class="flex shrink-0 items-center mt-6 sm:mt-0 sm:ml-4">
+
+            <!-- Add product button -->
+            <a routerLink="../../shelf/new" class="ml-4" mat-flat-button [color]="'primary'">
+                <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
+                <span class="ml-2 mr-1">เพิ่มใหม่</span>
+            </a>
+
+        </div>
+    </div>
+
+    <!-- search -->
+    <!-- <div class="search-box relative flex flex-col flex-0 px-6 md:px-8 border-b mt-4">
+
+    </div> -->
+
+    <!-- Main -->
+    <div class="flex flex-auto overflow-hidden">
+        <!-- Products list -->
+        <div class="flex flex-col flex-auto p-5 overflow-hidden sm:overflow-y-auto sm:relative overflow-x-auto">
+            <!-- Tabs -->
+            <mat-tab-group class="sm:px-2" [animationDuration]="'0'">
+                <!-- grid -->
+                <mat-tab label="แสดงภาพรวม">
+                    <ng-template matTabContent>
+                        <!-- Products list -->
+                        <div class="flex flex-col w-full lg:w-4/4 sm:pl-8 mb-3">
+                            <h1>ตู้เก็บแม่พิมพ์</h1>
+                        </div>
+                        <div class="flex flex-col w-full lg:w-4/4 sm:pl-8">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 w-full min-w-0">
+                                <ng-container *ngIf="dataGrid?.length != 0">
+                                    <ng-container *ngFor="
+                                            let item of dataGrid;
+                                            let i = index
+                                        ">
+                                        <!-- <ng-container *ngFor="let check of userBankPermission; let j = index">
+                                            <ng-container *ngIf="check.bank_id == item.id && check.actions == 'View'"> -->
+                                        <div class="flex flex-col flex-auto p-6 bg-card shadow rounded-2xl overflow-hidden">
+                                            <div class="flex items-start justify-between">
+                                                <div class="text-lg font-medium tracking-tight leading-6 truncate">
+                                                    {{ item.name }}
+                                                </div>
+                                                <div class="ml-2 -mt-2 -mr-3">
+                                                    <button mat-icon-button (click)="openDetail(item.id)">
+                                                        <mat-icon class="icon-size-5" [svgIcon]="'heroicons_solid:eye'">
+                                                        </mat-icon>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="flex flex-col items-center mt-2">
+                                                <div class="text-5xl sm:text-6xl font-bold tracking-tight leading-none text-gold-500">
+                                                    {{ item.summary | currency : " " : "symbol" }}
+                                                </div>
+                                                <div class="text-lg font-medium text-gold-600 dark:text-gold-500">
+                                                    {{ item.description }}
+                                                </div>
+                                                <div class="flex items-baseline justify-center w-full mt-5 text-secondary">
+                                                    <div class="text-md font-medium truncate">
+                                                        การทำรายการวันนี้:
+                                                    </div>
+                                                    <div class="ml-1.5 text-lg font-semibold">
+                                                        {{item.products.length}} ครั้ง
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- </ng-container>
+                                        </ng-container> -->
+                                    </ng-container>
+                                </ng-container>
+                            </div>
+                        </div>
+                    </ng-template>
+                </mat-tab>
+
+                <!-- table -->
+                <mat-tab label="แสดงแบบรายการ">
+                    <ng-template matTabContent>
+                        <!-- Products list -->
+                        <div class="flex flex-col flex-auto p-5 overflow-hidden sm:overflow-y-auto">
+                            <table datatable [dtOptions]="dtOptions" class="table row-border hover">
+                                <thead>
+                                    <tr>
+                                        <th>ลำดับ</th>
+                                        <th>ชื่อ</th>
+                                        <th>รายละเอียด</th>
+                                        <th>ชั้น</th>
+                                        <th>ช่องเก็บ</th>
+                                        <th>รูป</th>
+                                        <th>วันที่สร้าง</th>
+                                        <th>จัดการ</th>
+                                    </tr>
+                                </thead>
+                                <tbody *ngIf="dataRow?.length != 0">
+                                    <tr *ngFor="
+                                            let item of dataRow;
+                                            let i = index
+                                        ">
+                                        <td style="width: 5%">
+                                            {{ pages.begin + (i + 1) }}
+                                        </td>
+                                        <td>{{ item.name }}</td>
+                                        <td>{{ item.detail }}</td>
+                                        <td>
+                                            {{ item.floors.length}}
+                                        </td>
+                                        <td>
+                                            {{ item.channels.length}}
+                                        </td>
+                                        <td>
+                                            <button mat-button (click)="showPicture(item.image)">
+                                                <mat-icon>image</mat-icon>
+                                            </button>
+                                        </td>
+
+                                        <td>
+                                            {{ item.created_at | date : "dd-MM-yyyy hh:mm a " }}
+                                        </td>
+                                        <td style="width: 15%">
+                                            <button mat-button (click)="edit(item.id)">
+                                                <mat-icon>edit</mat-icon>
+                                            </button>
+                                            <button mat-button (click)="viewDetail(item.id)">
+                                                <mat-icon>visibility</mat-icon>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                                <tbody *ngIf="dataRow?.length == 0">
+                                    <tr>
+                                        <td colspan="9" class="no-data-available text-center">
+                                            ไม่มีข้อมูล !
+                                        </td>
+                                    </tr>
+                                </tbody>
+
+                            </table>
+                        </div>
+                    </ng-template>
+                </mat-tab>
+            </mat-tab-group>
+        </div>
+    </div>
+</div>

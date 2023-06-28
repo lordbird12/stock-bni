@@ -1,0 +1,206 @@
+<div class="flex flex-col flex-auto min-w-0 bg-card dark:bg-transparent">
+
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between p-6 sm:py-8 sm:px-10 border-b bg-card dark:bg-transparent">
+        <div class="flex-1 min-w-0">
+            <!-- Title -->
+            <div class="mt-2">
+                <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
+                    แก้ไขผู้ใช้งาน
+                </h2>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Main -->
+    <div class="flex-auto p-3 sm:p-10">
+        <form class="flex flex-col p-8 pb-4 bg-card shadow overflow-hidden ng-valid" [formGroup]="formData">
+            <div class="flex flex-col sm:flex-row p-8">
+
+                <!-- Product images and status -->
+                <div class="flex flex-col items-center sm:items-start mb-8 sm:mb-0">
+                    <div class="flex flex-col items-center">
+                        <h2>ข้อมูลส่วนตัว</h2>
+                    </div>
+
+                </div>
+
+                <div class="flex flex-auto flex-wrap">
+
+                    <!-- Name, SKU & etc. -->
+                    <div class="flex flex-col w-full lg:w-4/4 sm:pl-8">
+                        <!--firstname and lastname-->
+                        <div class="flex">
+                            <mat-form-field class="w-full">
+                                <mat-label>ชื่อผู้ใช้งาน
+                                </mat-label>
+                                <input matInput [formControlName]="'name'">
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="flex flex-col w-full lg:w-1/4 sm:pl-8">
+                        <mat-form-field class="w-full">
+                            <mat-label>ชื่อผู้ใช้งาน
+                            </mat-label>
+                            <input matInput [formControlName]="'code'">
+                        </mat-form-field>
+                    </div>
+                    <div class="flex flex-col w-full lg:w-1/4 sm:pl-8">
+                        <mat-form-field class="w-full">
+                            <mat-label>Email</mat-label>
+                            <input matInput [formControlName]="'email'">
+                        </mat-form-field>
+                    </div>
+                    <div class="flex flex-col w-full lg:w-1/4 sm:pl-8">
+                        <mat-form-field class="w-full">
+                            <mat-label>เบอร์โทร</mat-label>
+                            <input matInput [formControlName]="'tel'">
+                        </mat-form-field>
+                    </div>
+                    <div class="flex flex-col w-full lg:w-1/4 sm:pl-8">
+                        <mat-form-field class="w-full">
+                            <mat-label>เพศ
+                            </mat-label>
+                            <input matInput [formControlName]="'sex'">
+                        </mat-form-field>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <div class="flex flex-col sm:flex-row p-8">
+
+                <!-- Product images and status -->
+                <div class="flex flex-col items-center sm:items-start mb-8 sm:mb-0">
+                    <div class="flex flex-col items-center">
+                        <h2>ข้อมูลสถานะ</h2>
+                    </div>
+
+                </div>
+
+                <div class="flex flex-auto flex-wrap">
+
+                    <div class="flex flex-col w-full lg:w-1/4 sm:pl-8">
+                        <mat-form-field class="w-full">
+                            <mat-label>ความสูง
+                            </mat-label>
+                            <input matInput [formControlName]="'height'">
+                        </mat-form-field>
+                    </div>
+                    <div class="flex flex-col w-full lg:w-1/4 sm:pl-8">
+                        <mat-form-field class="w-full">
+                            <mat-label>น้ำหนัก</mat-label>
+                            <input matInput [formControlName]="'weight'">
+                        </mat-form-field>
+                    </div>
+                    <div class="flex flex-col w-full lg:w-1/4 sm:pl-8">
+                        <mat-form-field class="w-full">
+                            <mat-label>Fat Mass</mat-label>
+                            <input matInput [formControlName]="'fatMass'">
+                        </mat-form-field>
+                    </div>
+                    <div class="flex flex-col w-full lg:w-1/4 sm:pl-8">
+                        <mat-form-field class="w-full">
+                            <mat-label>Muscle
+                            </mat-label>
+                            <input matInput [formControlName]="'muscle'">
+                        </mat-form-field>
+                    </div>
+                </div>
+
+                <div class="flex flex-auto flex-wrap">
+
+                    <div class="flex flex-col w-full lg:w-1/4 sm:pl-8">
+                        <mat-form-field class="w-full">
+                            <mat-label>VisceralMass
+                            </mat-label>
+                            <input matInput [formControlName]="'visceralMass'">
+                        </mat-form-field>
+                    </div>
+                    <div class="flex flex-col w-full lg:w-1/4 sm:pl-8">
+                        <mat-form-field class="w-full">
+                            <mat-label>BMI</mat-label>
+                            <input matInput [formControlName]="'bmi'">
+                        </mat-form-field>
+                    </div>
+                    <div class="flex flex-col w-full lg:w-1/4 sm:pl-8">
+                        <mat-form-field class="w-full">
+                            <mat-label>Target</mat-label>
+                            <input matInput [formControlName]="'taget'">
+                        </mat-form-field>
+                    </div>
+                    <div class="flex flex-col w-full lg:w-1/4 sm:pl-8">
+                        <mat-form-field class="w-full">
+                            <mat-label>Handness
+                            </mat-label>
+                            <input matInput [formControlName]="'handness'">
+                        </mat-form-field>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <div class="flex flex-col sm:flex-row p-8">
+
+                <!-- Product images and status -->
+                <div class="flex flex-col items-center sm:items-start mb-8 sm:mb-0">
+                    <div class="flex flex-col items-center">
+                        <h2>สถานะตัวละคร</h2>
+                    </div>
+
+                </div>
+
+                <div class="flex flex-auto flex-wrap">
+
+                    <div class="flex flex-col w-full lg:w-1/5 sm:pl-8">
+                        <mat-form-field class="w-full">
+                            <mat-label>str
+                            </mat-label>
+                            <input matInput [formControlName]="'str'">
+                        </mat-form-field>
+                    </div>
+                    <div class="flex flex-col w-full lg:w-1/5 sm:pl-8">
+                        <mat-form-field class="w-full">
+                            <mat-label>vit</mat-label>
+                            <input matInput [formControlName]="'vit'">
+                        </mat-form-field>
+                    </div>
+                    <div class="flex flex-col w-full lg:w-1/5 sm:pl-8">
+                        <mat-form-field class="w-full">
+                            <mat-label>int</mat-label>
+                            <input matInput [formControlName]="'int'">
+                        </mat-form-field>
+                    </div>
+                    <div class="flex flex-col w-full lg:w-1/5 sm:pl-8">
+                        <mat-form-field class="w-full">
+                            <mat-label>agi
+                            </mat-label>
+                            <input matInput [formControlName]="'agi'">
+                        </mat-form-field>
+                    </div>
+                    <div class="flex flex-col w-full lg:w-1/5 sm:pl-8">
+                        <mat-form-field class="w-full">
+                            <mat-label>dex
+                            </mat-label>
+                            <input matInput [formControlName]="'dex'">
+                        </mat-form-field>
+                    </div>
+                </div>
+
+            </div>
+        </form>
+        <div class="flex items-center justify-end w-full border-t px-8 py-4">
+            <div class="flex items-center justify-end">
+                <a class="ml-4" mat-flat-button href="user/list">
+                    <mat-icon svgIcon="heroicons_solid:x"></mat-icon>
+                    ยกเลิก
+                </a>
+                <button class="px-6 ml-3 mat-primary" mat-flat-button (click)="UpdateUser()">
+                    <mat-icon svgIcon="heroicons_solid:check"></mat-icon>
+                    ยืนยัน
+                </button>
+            </div>
+        </div>
+        <pre>
+        </pre>
+    </div>
+</div>

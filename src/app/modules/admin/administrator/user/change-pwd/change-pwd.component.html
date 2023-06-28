@@ -1,0 +1,76 @@
+<div class="flex flex-col flex-auto min-w-0 bg-card dark:bg-transparent">
+
+    <!-- Header -->
+    <div
+        class="flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between p-6 sm:py-8 sm:px-10 border-b bg-card dark:bg-transparent">
+        <div class="flex-1 min-w-0">
+            <!-- Title -->
+            <div class="mt-2">
+                <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
+                    เปลี่ยนรหัสผ่าน
+                </h2>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Main -->
+    <div class="flex-auto p-3 sm:p-10">
+        <form class="flex flex-col mt-3 p-8 pb-4 bg-card shadow overflow-hidden ng-valid" [formGroup]="formData">
+            <div class="flex flex-col sm:flex-row p-8">
+
+                <!-- Product images and status -->
+                <!-- <div class="flex flex-col items-center sm:items-start mb-8 sm:mb-0">
+                    <div class="flex flex-col items-center">
+                        <h2>Info</h2>
+                    </div>
+    
+                </div> -->
+
+                <div class="flex flex-auto flex-wrap" >
+
+                    <!-- Name, SKU & etc. -->
+                    <div class="flex flex-col w-full lg:w-4/4 sm:pl-8" >
+                        <!--firstname and lastname-->
+                        <div class="flex p-5" style="flex-flow: column!important;">
+                            <mat-form-field class="w-3/12 pr-2">
+                                <mat-label>รหัสผ่านเก่า</mat-label>
+                                <input matInput [formControlName]="'password'">
+                            </mat-form-field>
+                            <mat-form-field class="w-3/12 pr-2">
+                                <mat-label>รหัสผ่านใหม่</mat-label>
+                                <input matInput [formControlName]="'new_password'">
+                            </mat-form-field>
+                            <mat-form-field class="w-3/12 pr-2">
+                                <mat-label>ยืนยันรหัสผ่านใหม่</mat-label>
+                                <input matInput [formControlName]="'confirm_new_password'">
+                            </mat-form-field>
+                          
+                        </div>
+                        <!--firstname and lastname-->
+                      
+
+                        <!-- Division and Lanching -->
+                       
+
+                     
+                    </div>
+                </div>
+            </div>
+        </form>
+        <div class="flex items-center justify-end w-full border-t px-8 py-4">
+            <div class="flex items-center justify-end">
+                <a class="ml-4" mat-flat-button href="user/list">
+                    <mat-icon svgIcon="heroicons_solid:x"></mat-icon>
+                    ยกเลิก
+                </a>
+                <button class="px-6 ml-3 mat-primary" mat-flat-button (click)="ChangePwd()">
+                    <mat-icon svgIcon="heroicons_solid:check"></mat-icon>
+                    ยืนยัน
+                </button>
+            </div>
+        </div>
+        <pre>
+        </pre>
+    </div>
+</div>

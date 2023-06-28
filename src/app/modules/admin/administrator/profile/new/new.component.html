@@ -1,0 +1,87 @@
+<div class="flex flex-col flex-auto min-w-0 bg-card dark:bg-transparent">
+
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between p-6 sm:py-8 sm:px-10 border-b bg-card dark:bg-transparent">
+        <div class="flex-1 min-w-0">
+            <!-- Title -->
+            <div class="mt-2">
+                <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
+                    สร้างรอบใหม่
+                </h2>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Main -->
+    <div class="flex-auto p-3 sm:p-10">
+        <form class="flex flex-col mt-3 p-8 pb-4 bg-card shadow overflow-hidden ng-valid" [formGroup]="formData">
+            <div class="flex flex-col sm:flex-row p-8">
+
+
+                <div class="flex flex-auto flex-wrap">
+
+                    <div class="flex flex-col w-full lg:w-4/4 sm:pl-8">
+                        <!--firstname and lastname-->
+                        <div class="flex">
+                            <mat-form-field class="w-full">
+                                <mat-label>ประเภทคลาส
+                                </mat-label>
+                                <mat-select [formControlName]="'classsId'">
+                                    <mat-option [value]="''">
+                                        <span>เลือกประเภทคลาส</span>
+                                    </mat-option>
+                                    <mat-option *ngFor="let item of ClassData" [value]="item.id">
+                                        {{item.name}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="flex flex-col w-full lg:w-1/4 sm:pl-8">
+                        <mat-form-field class="w-full">
+                            <mat-label>วันที่
+                            </mat-label>
+                            <input matInput [formControlName]="'date'">
+                        </mat-form-field>
+                    </div>
+                    <div class="flex flex-col w-full lg:w-1/4 sm:pl-8">
+                        <mat-form-field class="w-full">
+                            <mat-label>เวลาเริ่ม
+                            </mat-label>
+                            <input matInput [formControlName]="'startTime'">
+                        </mat-form-field>
+                    </div>
+                    <div class="flex flex-col w-full lg:w-1/4 sm:pl-8">
+                        <mat-form-field class="w-full">
+                            <mat-label>เวลาจบ
+                            </mat-label>
+                            <input matInput [formControlName]="'endTime'">
+                        </mat-form-field>
+                    </div>
+                    <div class="flex flex-col w-full lg:w-1/4 sm:pl-8">
+                        <mat-form-field class="w-full">
+                            <mat-label>Limit
+                            </mat-label>
+                            <input matInput type="number" [formControlName]="'limit'">
+                        </mat-form-field>
+                    </div>
+                </div>
+            </div>
+            <!-- button -->
+            <div class="flex items-center justify-end w-full border-t px-8 py-4">
+                <div class="flex items-center justify-end">
+                    <a class="ml-4" mat-flat-button href="round/list">
+                        <mat-icon svgIcon="heroicons_solid:x"></mat-icon>
+                        ยกเลิก
+                    </a>
+                    <button class="px-6 ml-3 mat-primary" mat-flat-button (click)="create()">
+                        <mat-icon svgIcon="heroicons_solid:check"></mat-icon>
+                        ยืนยัน
+                    </button>
+                </div>
+            </div>
+        </form>
+
+    </div>
+</div>

@@ -1,0 +1,115 @@
+<div class="sm:absolute sm:inset-0 flex flex-col flex-auto min-w-0 sm:overflow-hidden bg-card dark:bg-transparent">
+
+    <!-- Header -->
+    <div class="relative flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between py-8 px-6 md:px-8 border-b">
+        <!-- Loader -->
+        <div class="absolute inset-x-0 bottom-0" *ngIf="isLoading">
+            <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
+        </div>
+        <!-- Title -->
+        <div class="text-4xl font-extrabold tracking-tight">ผู้ใช้งาน</div>
+        <!-- Actions -->
+        <div *ngIf="roleType == 'marketing'" class="flex shrink-0 items-center mt-6 sm:mt-0 sm:ml-4">
+
+            <!-- Add product button -->
+            <a routerLink="../../user/create-user" class="ml-4" mat-flat-button [color]="'primary'">
+                <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
+                <span class="ml-2 mr-1">เพิ่มใหม่</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- search -->
+    <div class="search-box relative flex flex-col flex-0 px-6 md:px-8 border-b mt-4">
+        <!-- <form [formGroup]="filterForm">
+            <div class="flex flex-auto">
+                <div class="flex flex-col w-1/6">
+                    <mat-form-field class="search-box w-full xs:ml-0">
+                        <mat-select [formControlName]="'asset_type'">
+                            <mat-option value="default">Asset Type</mat-option>
+                            <mat-option *ngFor="let asset_type of asset_types ; let i = index;" [value]="asset_type.id">
+                                {{asset_type.name}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div class="flex flex-col w-5/6">
+                    <mat-form-field class="w-full">
+                        <input matInput [formControlName]="'searchInputControl'" [autocomplete]="'off'"
+                            [placeholder]="'Search for Code , Name'">
+                        <mat-icon class="icon-size-5" matPrefix [svgIcon]="'heroicons_solid:search'"></mat-icon>
+                    </mat-form-field>
+                </div>
+                <button mat-stroked-button class="w-fit" style="min-height: 48px;" (click)="resetForm()">
+                    <mat-icon class="icon-size-5" [svgIcon]="'heroicons_solid:refresh'"></mat-icon>
+                </button>
+            </div>
+        </form> -->
+    </div>
+
+    <!-- Main -->
+    <div class="flex flex-auto overflow-hidden">
+
+        <div class="flex flex-col flex-auto p-5 overflow-hidden sm:overflow-y-auto">
+            <table datatable [dtOptions]="dtOptions" class="table row-border hover" style="width: 100%">
+                <thead>
+                    <tr>
+                        <th>ลำดับ</th>
+                        <th>ชื่อ</th>
+                        <th>เบอร์โทร</th>
+                        <th>อีเมลล์</th>
+                        <th>เพศ</th>
+                        <th>ส่วนสูง</th>
+                        <th>น้ำหนัก</th>
+                        <th>BMI</th>
+                        <th>สถานะ</th>
+                        <th>สร้างโดย</th>
+                        <th>วันที่สร้าง</th>
+                        <th>จัดการ</th>
+                    </tr>
+                </thead>
+                <tbody *ngIf="dataRow.data?.length != 0">
+                    <tr *ngFor="let item of dataRow.data; let i = index">
+                        <td>{{ pages.begin + (i + 1) }}</td>
+                        <td>{{ item.name }}</td>
+                        <td>{{ item.email }}</td>
+                        <td>{{ item.tel }}</td>
+                        <td>{{ item.sex }}</td>
+                        <td>{{ item.higth }}</td>
+                        <td>{{ item.weight }}</td>
+                        <td>{{ item.bmi }}</td>
+                        <td>
+                            <div *ngIf="item.status === true">
+                                <span class="inline-flex items-center font-bold text-xs px-2.5 py-0.5 rounded-full tracking-wide uppercase bg-green-200 text-green-800 dark:bg-green-600 dark:text-green-50">
+                                <span class="leading-relaxed whitespace-nowrap">
+                                    เปิดการใช้งาน
+                                </span>
+                                </span>
+                            </div>
+                            <div *ngIf="item.status != true">
+                                <span class="inline-flex items-center font-bold text-xs px-2.5 py-0.5 rounded-full tracking-wide uppercase bg-red-200 text-red-800 dark:bg-red-600 dark:text-red-50">
+                                    <span class="leading-relaxed whitespace-nowrap">
+                                        ปิดการใช้งาน
+                                    </span>
+                                </span>
+                            </div>
+                        </td>
+                        <td>{{ item.createBy }}</td>
+                        <td>{{ item.createdAt }}</td>
+                        <td>
+                            <button mat-button (click)="edit(item.id)">
+                                <mat-icon>edit</mat-icon>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+                <tbody *ngIf="dataRow.data?.length == 0">
+                    <tr>
+                        <td colspan="6" class="no-data-available text-center">ไม่มีข้อมูล !</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
