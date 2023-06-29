@@ -37,6 +37,9 @@ import { AssetType, Pagination } from '../page.types';
 import { Service } from '../page.service';
 import { EditFloorsComponent } from '../edit-floors/edit-floors.component';
 import { NewFloorsComponent } from '../new-floors/new-floors.component';
+import { EditChanelComponent } from '../edit-chanel/edit-chanel.component';
+import { ViewProductComponent } from '../view-product/view-product.component';
+import { NewChanelComponent } from '../new-chanel/new-chanel.component';
 // import { ImportOSMComponent } from '../card/import-osm/import-osm.component';
 
 @Component({
@@ -121,16 +124,22 @@ export class EditComponent implements OnInit, AfterViewInit, OnDestroy {
         this.Id = this._activatedRoute.snapshot.paramMap.get('id');
         this._Service.getById(this.Id).subscribe((resp: any) => {
             this.itemData = resp.data;
-            this.dataRow  = resp.data.floors;
+            this.dataRow = resp.data.floors;
             console.log('resp', this.dataRow);
             this.formData.patchValue({
                 id: this.itemData.id,
                 name: this.itemData.name,
-                detail:  this.itemData.detail,
+                detail: this.itemData.detail,
                 image: this.env_path + this.itemData.image,
             });
             this.url_path = this.env_path + this.itemData.image
             this._changeDetectorRef.detectChanges();
+            for (let i = 0; i < this.dataRow.length; i++) {
+                for (let j = 0; j < this.dataRow[i].channels.length; j++) {
+                    this.dataRow[i].channels.isExpanded = false;
+                    console.log()
+                }
+            }
         });
     }
 
@@ -139,12 +148,12 @@ export class EditComponent implements OnInit, AfterViewInit, OnDestroy {
     //         this.blogData = resp.data;
     //     });
     // }
-    discard(): void {}
+    discard(): void { }
 
     /**
      * After view init
      */
-    ngAfterViewInit(): void {}
+    ngAfterViewInit(): void { }
 
     /**
      * On destroy
@@ -193,7 +202,7 @@ export class EditComponent implements OnInit, AfterViewInit, OnDestroy {
                     next: (resp: any) => {
                         this._router
                             .navigateByUrl('shelf/list')
-                            .then(() => {});
+                            .then(() => { });
                     },
                     error: (err: any) => {
                         this._fuseConfirmationService.open({
@@ -263,19 +272,44 @@ export class EditComponent implements OnInit, AfterViewInit, OnDestroy {
             .open(EditFloorsComponent, {
                 autoFocus: false,
                 data: {
-                 data
+                    data
                 },
             })
             .afterClosed()
             .subscribe(() => {
                 this._Service.getById(this.Id).subscribe((resp: any) => {
                     this.itemData = resp.data;
-                    this.dataRow  = resp.data.floors;
+                    this.dataRow = resp.data.floors;
                     console.log('resp', this.dataRow);
                     this.formData.patchValue({
                         id: this.itemData.id,
                         name: this.itemData.name,
-                        detail:  this.itemData.detail,
+                        detail: this.itemData.detail,
+                        image: this.env_path + this.itemData.image,
+                    });
+                    this.url_path = this.env_path + this.itemData.image
+                    this._changeDetectorRef.detectChanges();
+                });
+            });
+    }
+    editChanel(data: any): void {
+        this._matDialog
+            .open(EditChanelComponent, {
+                autoFocus: false,
+                data: {
+                    data
+                },
+            })
+            .afterClosed()
+            .subscribe(() => {
+                this._Service.getById(this.Id).subscribe((resp: any) => {
+                    this.itemData = resp.data;
+                    this.dataRow = resp.data.floors;
+                    console.log('resp', this.dataRow);
+                    this.formData.patchValue({
+                        id: this.itemData.id,
+                        name: this.itemData.name,
+                        detail: this.itemData.detail,
                         image: this.env_path + this.itemData.image,
                     });
                     this.url_path = this.env_path + this.itemData.image
@@ -288,19 +322,19 @@ export class EditComponent implements OnInit, AfterViewInit, OnDestroy {
             .open(NewFloorsComponent, {
                 autoFocus: false,
                 data: {
-                 data
+                    data
                 },
             })
             .afterClosed()
             .subscribe(() => {
                 this._Service.getById(this.Id).subscribe((resp: any) => {
                     this.itemData = resp.data;
-                    this.dataRow  = resp.data.floors;
+                    this.dataRow = resp.data.floors;
                     console.log('resp', this.dataRow);
                     this.formData.patchValue({
                         id: this.itemData.id,
                         name: this.itemData.name,
-                        detail:  this.itemData.detail,
+                        detail: this.itemData.detail,
                         image: this.env_path + this.itemData.image,
                     });
                     this.url_path = this.env_path + this.itemData.image
@@ -308,4 +342,68 @@ export class EditComponent implements OnInit, AfterViewInit, OnDestroy {
                 });
             });
     }
+    newChanel(data: any): void {
+        console.log(data)
+
+        this._matDialog
+            .open(NewChanelComponent, {
+                autoFocus: false,
+                data: {
+                    data
+                },
+            })
+            .afterClosed()
+            .subscribe(() => {
+                this._Service.getById(this.Id).subscribe((resp: any) => {
+                    this.itemData = resp.data;
+                    this.dataRow = resp.data.floors;
+                    console.log('resp', this.dataRow);
+                    this.formData.patchValue({
+                        id: this.itemData.id,
+                        name: this.itemData.name,
+                        detail: this.itemData.detail,
+                        image: this.env_path + this.itemData.image,
+                    });
+                    this.url_path = this.env_path + this.itemData.image
+                    this._changeDetectorRef.detectChanges();
+                });
+            });
+    }
+    viewProduct(data: any): void {
+        this._matDialog
+            .open(ViewProductComponent, {
+                autoFocus: false,
+                data: {
+                    data
+                },
+            })
+            .afterClosed()
+            .subscribe(() => {
+                this._Service.getById(this.Id).subscribe((resp: any) => {
+                    this.itemData = resp.data;
+                    this.dataRow = resp.data.floors;
+                    console.log('resp', this.dataRow);
+                    this.formData.patchValue({
+                        id: this.itemData.id,
+                        name: this.itemData.name,
+                        detail: this.itemData.detail,
+                        image: this.env_path + this.itemData.image,
+                    });
+                    this.url_path = this.env_path + this.itemData.image
+                    this._changeDetectorRef.detectChanges();
+                });
+            });
+    }
+
+
+    expandFunction(): void {
+        console.log(this.dataRow[0].channels)
+        for (let i = 0; i < this.dataRow.length; i++) {
+          if (this.dataRow[i].channels.isExpanded != true) {
+            this.dataRow[i].channels.isExpanded = true;
+          } else {
+            this.dataRow[i].channels.isExpanded = false;
+          }
+        }
+      }
 }

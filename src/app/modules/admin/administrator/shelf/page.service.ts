@@ -1302,6 +1302,17 @@ export class Service {
             );
     }
 
+    getChanel(id): Observable<any> {
+        return this._httpClient
+            .get<any>(environment.API_URL + '/api/get_floor/'+ id)
+            .pipe(
+                tap((meterial) => {
+                    this._materials.next(meterial);
+                })
+            );
+    }
+
+
 
     //   * update branch
     update(data: any): Observable<any> {
@@ -1331,11 +1342,37 @@ export class Service {
                 })
             );
     }
+    updateChanel(data: any, id: any): Observable<any> {
+        return this._httpClient
+            .put(
+                environment.API_URL + '/api/chanel/' + id,
+                data
+            )
+            .pipe(
+                switchMap((response: any) => {
+                    // Return a new observable with the response
+                    return of(response);
+                })
+            );
+    }
 
     newFloor(data: any): Observable<any> {
         return this._httpClient
             .post(
                 environment.API_URL + '/api/floor',
+                data
+            )
+            .pipe(
+                switchMap((response: any) => {
+                    // Return a new observable with the response
+                    return of(response);
+                })
+            );
+    }
+    newChannel(data: any): Observable<any> {
+        return this._httpClient
+            .post(
+                environment.API_URL + '/api/channel',
                 data
             )
             .pipe(

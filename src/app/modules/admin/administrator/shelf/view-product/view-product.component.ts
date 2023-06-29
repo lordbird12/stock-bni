@@ -1,23 +1,31 @@
 import {
     AfterViewInit,
+    ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
     Inject,
     OnDestroy,
     OnInit,
     ViewChild,
+    ViewEncapsulation,
 } from '@angular/core';
 import {
-    FormArray,
     FormBuilder,
     FormControl,
     FormGroup,
     Validators,
 } from '@angular/forms';
-import { MatPaginator } from '@angular/material/paginator';
+import { MatCheckboxChange } from '@angular/material/checkbox';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import {
+    debounceTime,
+    map,
+    merge,
+    Observable,
     Subject,
+    switchMap,
+    takeUntil,
 } from 'rxjs';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
@@ -25,25 +33,29 @@ import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dial
 import { ActivatedRoute, Router } from '@angular/router';
 import { environment } from 'environments/environment';
 import { AuthService } from 'app/core/auth/auth.service';
-import { Pagination } from '../page.types';
+import { sortBy, startCase } from 'lodash-es';
+import { AssetType, Pagination } from '../page.types';
 import { Service } from '../page.service';
 // import { ImportOSMComponent } from '../card/import-osm/import-osm.component';
 
 @Component({
-    selector: 'new-floors',
-    templateUrl: './new-floors.component.html',
-    styleUrls: ['./new-floors.component.scss'],
+    selector: 'view-product',
+    templateUrl: './view-product.component.html',
+    styleUrls: ['./view-product.component.scss'],
     animations: fuseAnimations,
 })
-export class NewFloorsComponent implements OnInit, AfterViewInit, OnDestroy {
+export class ViewProductComponent implements OnInit, AfterViewInit, OnDestroy {
 
     public dtOptions: DataTables.Settings = {};
     public dataRow: any[];
 
+    @ViewChild(MatPaginator) private _paginator: MatPaginator;
+    @ViewChild(MatSort) private _sort: MatSort;
     files: File[] = [];
     files2: File[] = [];
 
     blogData: any = [];
+    floorData: any = [];
     statusData: any = [
         { value: true, name: 'เปิดใช้งาน' },
         { value: false, name: 'ปิดใช้งาน' },
@@ -65,8 +77,14 @@ export class NewFloorsComponent implements OnInit, AfterViewInit, OnDestroy {
     selectedProduct: any | null = null;
     filterForm: FormGroup;
     tagsEditMode: boolean = false;
+    private _unsubscribeAll: Subject<any> = new Subject<any>();
     env_path = environment.API_URL;
     url_path: string;
+    // me: any | null;
+    // get roleType(): string {
+    //     return 'marketing';
+    // }
+
     supplierId: string | null;
     pagination: Pagination;
 
@@ -77,14 +95,23 @@ export class NewFloorsComponent implements OnInit, AfterViewInit, OnDestroy {
         private _fuseConfirmationService: FuseConfirmationService,
         private _formBuilder: FormBuilder,
         private _Service: Service,
+        private _matDialog: MatDialog,
+        private _router: Router,
+        private _activatedRoute: ActivatedRoute,
+        private _authService: AuthService,
         private _changeDetectorRef: ChangeDetectorRef,
-        @Inject(MAT_DIALOG_DATA) private _data: any,
-        private _matDialogRef: MatDialogRef<NewFloorsComponent>
+        @Inject(MAT_DIALOG_DATA) private _data:any,
+        private _matDialogRef: MatDialogRef<ViewProductComponent>
     ) {
         this.formData = this._formBuilder.group({
-            number: this._formBuilder.array([]),
+            id: ['', Validators.required],
+            name: '',
+            detail: '',
+            shelve_id: '',
+            floor_id: '',
         });
     }
+
     // -----------------------------------------------------------------------------------------------------
     // @ Lifecycle hooks
     // -----------------------------------------------------------------------------------------------------
@@ -93,37 +120,26 @@ export class NewFloorsComponent implements OnInit, AfterViewInit, OnDestroy {
      * On init
      */
     ngOnInit(): void {
-        this.getBlogCategory();
+        this.dataRow = this._data.data.product;
         this._changeDetectorRef.detectChanges();
-    }
-
-    number(): FormArray {
-        return this.formData.get('number') as FormArray
-    }
-
-    newNumber(): FormGroup {
-        return this._formBuilder.group({
-            name: '',
-            detail: '',
-            shelve_id: parseInt(this._data.data),
-        })
-    }
-    addNumber(): void {
-        this.number().push(this.newNumber());
-    }
-
-    removeNumber(i: number): void {
-        this.number().removeAt(i);
     }
 
     getBlogCategory(): void {
         this._Service.getShelf().subscribe((resp) => {
-            console.log(resp)
+        // console.log(resp)
             this.blogData = resp.data;
         });
     }
-
-    ngAfterViewInit(): void { }
+    // getFloor(): void {
+    //     this._Service.getChanel().subscribe((resp) => {
+    //     // console.log(resp)
+    //         this.floorData = resp.data;
+    //     });
+    // }
+    /**
+     * After view init
+     */
+    ngAfterViewInit(): void {}
 
     /**
      * On destroy
@@ -132,13 +148,16 @@ export class NewFloorsComponent implements OnInit, AfterViewInit, OnDestroy {
         // Unsubscribe from all subscriptions
     }
 
-    new(): void {
-        console.log(this.formData.value)
+    onClose():void {
+        this._matDialogRef.close();
+    }
+
+    update(): void {
         this.flashMessage = null;
         this.flashErrorMessage = null;
         const confirmation = this._fuseConfirmationService.open({
-            title: 'เพิ่มรายการ',
-            message: 'คุณต้องการเพิ่มรายการใช่หรือไม่ ',
+            title: 'แก้ไขรายการ',
+            message: 'คุณต้องการแก้ไขรายการใช่หรือไม่ ',
             icon: {
                 show: false,
                 name: 'heroicons_outline:exclamation',
@@ -157,47 +176,49 @@ export class NewFloorsComponent implements OnInit, AfterViewInit, OnDestroy {
             },
             dismissible: true,
         });
+
         // Subscribe to the confirmation dialog closed action
         confirmation.afterClosed().subscribe((result) => {
             // If the confirm button pressed...
             if (result === 'confirmed') {
                 let formValue = this.formData.value;
-                formValue.Number = formValue.number.forEach(element => {
-                    this._Service.newFloor(element).subscribe({
-                        next: () => {
-                            this._matDialogRef.close()
-                        },
-                        error: (err: any) => {
-                            this._fuseConfirmationService.open({
-                                title: 'กรุณาระบุข้อมูล',
-                                message: err.error.message,
-                                icon: {
-                                    show: true,
-                                    name: 'heroicons_outline:exclamation',
-                                    color: 'warning',
+
+                // const formData = new FormData();
+                // Object.entries(formValue).forEach(([key, value]: any[]) => {
+                //     formData.append(key, value);
+                // });
+                // Disable the form
+                this._Service.updateChanel(formValue, formValue.id).subscribe({
+                    next: (resp: any) => {
+                     this._matDialogRef.close()
+                    },
+                    error: (err: any) => {
+                        this._fuseConfirmationService.open({
+                            title: 'กรุณาระบุข้อมูล',
+                            message: err.error.message,
+                            icon: {
+                                show: true,
+                                name: 'heroicons_outline:exclamation',
+                                color: 'warning',
+                            },
+                            actions: {
+                                confirm: {
+                                    show: false,
+                                    label: 'ยืนยัน',
+                                    color: 'primary',
                                 },
-                                actions: {
-                                    confirm: {
-                                        show: false,
-                                        label: 'ยืนยัน',
-                                        color: 'primary',
-                                    },
-                                    cancel: {
-                                        show: false,
-                                        label: 'ยกเลิก',
-                                    },
+                                cancel: {
+                                    show: false,
+                                    label: 'ยกเลิก',
                                 },
-                                dismissible: true,
-                            });
-                        },
-                    });
+                            },
+                            dismissible: true,
+                        });
+                        // console.log(err.error.message)
+                    },
                 });
             }
         });
-    }
-
-    onClose():void {
-        this._matDialogRef.close();
     }
 
     onSelect(event) {

@@ -41,9 +41,11 @@ import { DataTablesModule } from 'angular-datatables';
 import { AddComponent } from './add/add.component';
 import { EditFloorsComponent } from './edit-floors/edit-floors.component';
 import { NewFloorsComponent } from './new-floors/new-floors.component';
-
+import { EditChanelComponent } from './edit-chanel/edit-chanel.component';
+import { ViewProductComponent } from './view-product/view-product.component';
+import { NewChanelComponent } from './new-chanel/new-chanel.component';
 @NgModule({
-    declarations: [PageComponent, ListComponent, NewComponent, EditComponent, AddComponent, EditFloorsComponent, NewFloorsComponent],
+    declarations: [PageComponent, ListComponent, NewComponent, EditComponent, AddComponent, EditFloorsComponent, NewFloorsComponent,NewChanelComponent, EditChanelComponent,ViewProductComponent],
     imports: [
         RouterModule.forChild(positionRoute),
         MatButtonModule,
