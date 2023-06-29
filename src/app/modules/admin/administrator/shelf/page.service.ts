@@ -1292,6 +1292,17 @@ export class Service {
             );
     }
 
+    getShelf(): Observable<any> {
+        return this._httpClient
+            .get<any>(environment.API_URL + '/api/get_shelf')
+            .pipe(
+                tap((meterial) => {
+                    this._materials.next(meterial);
+                })
+            );
+    }
+
+
     //   * update branch
     update(data: any): Observable<any> {
         return this._httpClient
@@ -1299,6 +1310,33 @@ export class Service {
                 environment.API_URL + '/api/update_shelf',
                 data,
                 this.httpOptionsFormdata
+            )
+            .pipe(
+                switchMap((response: any) => {
+                    // Return a new observable with the response
+                    return of(response);
+                })
+            );
+    }
+    updateFloor(data: any, id: any): Observable<any> {
+        return this._httpClient
+            .put(
+                environment.API_URL + '/api/floor/' + id,
+                data
+            )
+            .pipe(
+                switchMap((response: any) => {
+                    // Return a new observable with the response
+                    return of(response);
+                })
+            );
+    }
+
+    newFloor(data: any): Observable<any> {
+        return this._httpClient
+            .post(
+                environment.API_URL + '/api/floor',
+                data
             )
             .pipe(
                 switchMap((response: any) => {
@@ -1319,6 +1357,19 @@ export class Service {
         return this._httpClient
             .post(
                 environment.API_URL + '/api/shelf_page',
+                dataTablesParameters,
+                this.httpOptionsFormdata
+            )
+            .pipe(
+                switchMap((response: any) => {
+                    return of(response.data);
+                })
+            );
+    }
+    getPageFloor(dataTablesParameters: any): Observable<DataTablesResponse> {
+        return this._httpClient
+            .post(
+                environment.API_URL + '/api/floor_page',
                 dataTablesParameters,
                 this.httpOptionsFormdata
             )

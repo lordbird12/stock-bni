@@ -80,8 +80,59 @@
                 </button>
             </div>
         </div>
-        <pre>
-        </pre>
+    </div>
+    <div class="flex-auto">
+        <div class="flex items-center justify-end w-full border-t px-8 py-4">
+            <div class="flex items-center justify-end">
+                <button class="px-6 ml-3 mat-primary" mat-flat-button (click)="newFloor(this.itemData.id)">
+                    <mat-icon svgIcon="heroicons_solid:plus"></mat-icon>
+             เพิ่มชั้น
+                </button>
+            </div>
+        </div>
+        <div class="flex items-center justify-end w-full  px-8 py-4">
+            <div class="flex flex-col flex-auto p-5 overflow-hidden sm:overflow-y-auto">
+                <table class="w-full text-m text-left text-gray-500 dark:text-gray-400">
+                    <thead class="text-lx text-center text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 h-10">
+                        <tr>
+                            <th>ลำดับ</th>
+                            <th>ชื่อตู้</th>
+                            <th>ชื่อชั้น</th>
+                            <th>รายละเอียด</th>
+                            <th>วันที่สร้าง</th>
+                            <th>จัดการ</th>
+                        </tr>
+                    </thead>
+                    <tbody *ngIf="dataRow?.length != 0">
+                        <tr class="text-center" *ngFor="
+                                let item of dataRow;
+                                let i = index
+                            ">
+                            <td class="text-center" style="width: 5%">
+                                {{i + 1}}
+                            </td>
+                            <td style="width: 15%">{{ this.itemData.name }}</td>
+                            <td style="width: 15%">{{ item?.name }}</td>
+                            <td style="width: 20%">
+                                {{ item?.detail}}
+                            </td>
+                            <td>
+                                {{ item?.created_at | date : "dd-MM-yyyy hh:mm a " }}
+                            </td>
+                            <td style="width: 15%">
+                                <button mat-button (click)="editData(item)">
+                                    <mat-icon>edit</mat-icon>
+                                </button>
+                                <button mat-button (click)="edit(item.id)">
+                                    <mat-icon>visibility</mat-icon>
+                                </button>
+
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
 </div>

@@ -39,9 +39,11 @@ import { NewComponent } from './new/new.component';
 import { EditComponent } from './edit/edit.component';
 import { DataTablesModule } from 'angular-datatables';
 import { AddComponent } from './add/add.component';
+import { EditFloorsComponent } from './edit-floors/edit-floors.component';
+import { NewFloorsComponent } from './new-floors/new-floors.component';
 
 @NgModule({
-    declarations: [PageComponent, ListComponent, NewComponent, EditComponent, AddComponent],
+    declarations: [PageComponent, ListComponent, NewComponent, EditComponent, AddComponent, EditFloorsComponent, NewFloorsComponent],
     imports: [
         RouterModule.forChild(positionRoute),
         MatButtonModule,

@@ -1,12 +1,11 @@
 import {
     AfterViewInit,
-    ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
+    Inject,
     OnDestroy,
     OnInit,
     ViewChild,
-    ViewEncapsulation,
 } from '@angular/core';
 import {
     FormBuilder,
@@ -14,44 +13,32 @@ import {
     FormGroup,
     Validators,
 } from '@angular/forms';
-import { MatCheckboxChange } from '@angular/material/checkbox';
-import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import {
-    debounceTime,
-    map,
-    merge,
-    Observable,
     Subject,
-    switchMap,
-    takeUntil,
 } from 'rxjs';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
-import { MatDialog } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { environment } from 'environments/environment';
 import { AuthService } from 'app/core/auth/auth.service';
-import { sortBy, startCase } from 'lodash-es';
-import { AssetType, Pagination } from '../page.types';
+import { Pagination } from '../page.types';
 import { Service } from '../page.service';
-import { EditFloorsComponent } from '../edit-floors/edit-floors.component';
-import { NewFloorsComponent } from '../new-floors/new-floors.component';
 // import { ImportOSMComponent } from '../card/import-osm/import-osm.component';
 
 @Component({
-    selector: 'edit',
-    templateUrl: './edit.component.html',
-    styleUrls: ['./edit.component.scss'],
+    selector: 'new-floors',
+    templateUrl: './new-floors.component.html',
+    styleUrls: ['./new-floors.component.scss'],
     animations: fuseAnimations,
 })
-export class EditComponent implements OnInit, AfterViewInit, OnDestroy {
+export class NewFloorsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     public dtOptions: DataTables.Settings = {};
     public dataRow: any[];
 
-    @ViewChild(MatPaginator) private _paginator: MatPaginator;
-    @ViewChild(MatSort) private _sort: MatSort;
     files: File[] = [];
     files2: File[] = [];
 
@@ -77,14 +64,8 @@ export class EditComponent implements OnInit, AfterViewInit, OnDestroy {
     selectedProduct: any | null = null;
     filterForm: FormGroup;
     tagsEditMode: boolean = false;
-    private _unsubscribeAll: Subject<any> = new Subject<any>();
     env_path = environment.API_URL;
     url_path: string;
-    // me: any | null;
-    // get roleType(): string {
-    //     return 'marketing';
-    // }
-
     supplierId: string | null;
     pagination: Pagination;
 
@@ -92,20 +73,18 @@ export class EditComponent implements OnInit, AfterViewInit, OnDestroy {
      * Constructor
      */
     constructor(
-        private _changeDetectorRef: ChangeDetectorRef,
         private _fuseConfirmationService: FuseConfirmationService,
         private _formBuilder: FormBuilder,
         private _Service: Service,
-        private _matDialog: MatDialog,
-        private _router: Router,
-        private _activatedRoute: ActivatedRoute,
-        private _authService: AuthService
+        private _changeDetectorRef: ChangeDetectorRef,
+        @Inject(MAT_DIALOG_DATA) private _data:any,
+        private _matDialogRef: MatDialogRef<NewFloorsComponent>
     ) {
         this.formData = this._formBuilder.group({
             id: ['', Validators.required],
             name: '',
             detail: '',
-            image: '',
+            shelve_id: '',
         });
     }
 
@@ -117,28 +96,24 @@ export class EditComponent implements OnInit, AfterViewInit, OnDestroy {
      * On init
      */
     ngOnInit(): void {
-        // this.getBlogCategory();
-        this.Id = this._activatedRoute.snapshot.paramMap.get('id');
-        this._Service.getById(this.Id).subscribe((resp: any) => {
-            this.itemData = resp.data;
-            this.dataRow  = resp.data.floors;
-            console.log('resp', this.dataRow);
-            this.formData.patchValue({
-                id: this.itemData.id,
-                name: this.itemData.name,
-                detail:  this.itemData.detail,
-                image: this.env_path + this.itemData.image,
-            });
-            this.url_path = this.env_path + this.itemData.image
-            this._changeDetectorRef.detectChanges();
+        console.log(this._data.data)
+        this.getBlogCategory();
+        this.formData.patchValue({
+            id: '',
+            shelve_id: parseInt(this._data.data),
+            name: '',
+            detail: '',
         });
+        console.log(this.formData.value)
+        this._changeDetectorRef.detectChanges();
     }
 
-    // getBlogCategory(): void {
-    //     this._Service.getCategory().subscribe((resp) => {
-    //         this.blogData = resp.data;
-    //     });
-    // }
+    getBlogCategory(): void {
+        this._Service.getShelf().subscribe((resp) => {
+        console.log(resp)
+            this.blogData = resp.data;
+        });
+    }
     discard(): void {}
 
     /**
@@ -153,12 +128,12 @@ export class EditComponent implements OnInit, AfterViewInit, OnDestroy {
         // Unsubscribe from all subscriptions
     }
 
-    update(): void {
+    new(): void {
         this.flashMessage = null;
         this.flashErrorMessage = null;
         const confirmation = this._fuseConfirmationService.open({
-            title: 'แก้ไขรายการ',
-            message: 'คุณต้องการแก้ไขรายการใช่หรือไม่ ',
+            title: 'เพิ่มรายการ',
+            message: 'คุณต้องการเพิ่มรายการใช่หรือไม่ ',
             icon: {
                 show: false,
                 name: 'heroicons_outline:exclamation',
@@ -184,16 +159,14 @@ export class EditComponent implements OnInit, AfterViewInit, OnDestroy {
             if (result === 'confirmed') {
                 let formValue = this.formData.value;
 
-                const formData = new FormData();
-                Object.entries(formValue).forEach(([key, value]: any[]) => {
-                    formData.append(key, value);
-                });
+                // const formData = new FormData();
+                // Object.entries(formValue).forEach(([key, value]: any[]) => {
+                //     formData.append(key, value);
+                // });
                 // Disable the form
-                this._Service.update(formData).subscribe({
-                    next: (resp: any) => {
-                        this._router
-                            .navigateByUrl('shelf/list')
-                            .then(() => {});
+                this._Service.newFloor(formValue).subscribe({
+                    next: () => {
+                     this._matDialogRef.close()
                     },
                     error: (err: any) => {
                         this._fuseConfirmationService.open({
@@ -256,56 +229,5 @@ export class EditComponent implements OnInit, AfterViewInit, OnDestroy {
             // Mark for check
             this._changeDetectorRef.markForCheck();
         }, 3000);
-    }
-
-    editData(data: any): void {
-        this._matDialog
-            .open(EditFloorsComponent, {
-                autoFocus: false,
-                data: {
-                 data
-                },
-            })
-            .afterClosed()
-            .subscribe(() => {
-                this._Service.getById(this.Id).subscribe((resp: any) => {
-                    this.itemData = resp.data;
-                    this.dataRow  = resp.data.floors;
-                    console.log('resp', this.dataRow);
-                    this.formData.patchValue({
-                        id: this.itemData.id,
-                        name: this.itemData.name,
-                        detail:  this.itemData.detail,
-                        image: this.env_path + this.itemData.image,
-                    });
-                    this.url_path = this.env_path + this.itemData.image
-                    this._changeDetectorRef.detectChanges();
-                });
-            });
-    }
-    newFloor(data: any): void {
-        this._matDialog
-            .open(NewFloorsComponent, {
-                autoFocus: false,
-                data: {
-                 data
-                },
-            })
-            .afterClosed()
-            .subscribe(() => {
-                this._Service.getById(this.Id).subscribe((resp: any) => {
-                    this.itemData = resp.data;
-                    this.dataRow  = resp.data.floors;
-                    console.log('resp', this.dataRow);
-                    this.formData.patchValue({
-                        id: this.itemData.id,
-                        name: this.itemData.name,
-                        detail:  this.itemData.detail,
-                        image: this.env_path + this.itemData.image,
-                    });
-                    this.url_path = this.env_path + this.itemData.image
-                    this._changeDetectorRef.detectChanges();
-                });
-            });
     }
 }
