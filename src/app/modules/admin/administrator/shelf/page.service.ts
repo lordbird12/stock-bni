@@ -817,11 +817,11 @@ export class Service {
           })
         );
       }
-    
-    createChannel(data: any): Observable<any> {
+
+    createShelf(data: any): Observable<any> {
         return this._httpClient
             .post(
-                environment.API_URL + '/api/gift_voucher_code',
+                environment.API_URL + '/api/shelf',
                 data,
                 this.httpOptionsFormdata
             )

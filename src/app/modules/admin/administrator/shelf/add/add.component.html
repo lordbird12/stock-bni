@@ -7,7 +7,7 @@
             <!-- Title -->
             <div class="mt-2">
                 <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
-                    เพิ่มชั้นวาง
+                    เพิ่มตู้
                 </h2>
             </div>
 
@@ -21,7 +21,7 @@
                 <div class="flex flex-auto flex-wrap">
                     <div class="flex flex-col w-full lg:w-4/4 p-3">
                         <mat-form-field class="w-full">
-                            <mat-label>ชื่อชั้นวาง
+                            <mat-label>ชื่อตู้
                             </mat-label>
                             <input matInput [formControlName]="'name'">
                         </mat-form-field>
@@ -31,8 +31,22 @@
                         <mat-form-field class="w-full">
                             <mat-label>รายละเอียด
                             </mat-label>
-                            <input matInput [formControlName]="'detail'">
+                            <textarea matInput rows="4" [formControlName]="'detail'" placeholder="กรุณาระบุรายละเอียด"></textarea>
+
                         </mat-form-field>
+                    </div>
+                    <div class="flex flex-col w-full lg:w-4/4 sm:pl-3">
+                        <div class="border-t border-gray-200">
+                            <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
+                                <div class=" flex flex-wrap justify-start">
+                                    <ngx-dropzone style="width: 100%; height: 120px; justify-content: center;" (change)="onSelect($event)">
+                                        <ngx-dropzone-label>รูปตู้</ngx-dropzone-label>
+                                        <ngx-dropzone-image-preview *ngFor="let f of files" [removable]="true" [file]="f" (removed)="onRemove(f)">
+                                        </ngx-dropzone-image-preview>
+                                    </ngx-dropzone>
+                                </div>
+                            </dd>
+                        </div>
                     </div>
 
                 </div>
@@ -44,52 +58,12 @@
                         <mat-icon svgIcon="heroicons_solid:x"></mat-icon>
                         ยกเลิก
                     </a>
-                    <button class="px-6 ml-3 mat-primary" mat-flat-button (click)="createCoupon()">
+                    <button class="px-6 ml-3 mat-primary" mat-flat-button (click)="create()">
                         <mat-icon svgIcon="heroicons_solid:check"></mat-icon>
                         ยืนยัน
                     </button>
                 </div>
             </div>
         </form>
-
-    </div>
-    <div class="flex flex-auto overflow-hidden">
-        <!-- Products list -->
-        <div class="flex flex-col flex-auto p-5 overflow-hidden sm:overflow-y-auto">
-            <!-- Products list -->
-            <div class="flex flex-col flex-auto p-5 overflow-hidden sm:overflow-y-auto ">
-                <table datatable [dtOptions]="dtOptions" class="table row-border hover">
-                    <thead>
-                        <tr>
-                            <th>ลำดับ</th>
-                            <th style="width:30%;">ชื่อชั้นวาง</th>
-                            <th>รายละเอียด</th>
-                            <th>ลบ</th>
-                        </tr>
-                    </thead>
-                    <tbody *ngIf="dataRow?.length != 0">
-                        <ng-container *ngFor="let item of dataRow; let i = index">
-                            <tr *ngIf="item.gift_voucher_id == this.id">
-                                <!-- <td style="width: 5%;">{{ pages.begin + (i + 1) }}</td> -->
-                                <td>{{ item.No }}</td>
-                                <td>{{ item.name }}</td>
-                                <td>{{ item.detail }}</td>
-                                <td>
-                                    <button mat-button (click)="DeleteCoupon(item.id)">
-                                        <mat-icon svgIcon="heroicons_solid:trash"></mat-icon>
-                                    </button>
-                                </td>
-                            </tr>   
-                        </ng-container>
-                
-                    </tbody>
-                    <tbody *ngIf="dataRow?.length == 0">
-                        <tr>
-                            <td colspan="9" class="no-data-available text-center">ไม่มีข้อมูล !</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
     </div>
 </div>

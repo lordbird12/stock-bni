@@ -44,7 +44,7 @@ export const positionRoute: Route[] = [
                 // }
             },
             {
-                path: 'add/:id',
+                path: 'add',
                 component: AddComponent,
                 // resolve: {
                 //     products: PermissionProductsResolver,

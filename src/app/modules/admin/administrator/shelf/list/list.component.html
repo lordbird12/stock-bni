@@ -11,7 +11,7 @@
         <div class="flex shrink-0 items-center mt-6 sm:mt-0 sm:ml-4">
 
             <!-- Add product button -->
-            <a routerLink="../../shelf/new" class="ml-4" mat-flat-button [color]="'primary'">
+            <a routerLink="../../shelf/add" class="ml-4" mat-flat-button [color]="'primary'">
                 <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
                 <span class="ml-2 mr-1">เพิ่มใหม่</span>
             </a>
@@ -128,12 +128,12 @@
                                             {{ item.created_at | date : "dd-MM-yyyy hh:mm a " }}
                                         </td>
                                         <td style="width: 15%">
-                                           
+
                                                 <button mat-button (click)="add(item.id)">
                                                     <mat-icon svgIcon="library_add"></mat-icon>
-                
+
                                                 </button>
-                                           
+
                                             <button mat-button (click)="edit(item.id)">
                                                 <mat-icon>edit</mat-icon>
                                             </button>
