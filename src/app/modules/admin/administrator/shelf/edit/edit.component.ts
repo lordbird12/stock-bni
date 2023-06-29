@@ -73,7 +73,7 @@ export class EditComponent implements OnInit, AfterViewInit, OnDestroy {
     tagsEditMode: boolean = false;
     private _unsubscribeAll: Subject<any> = new Subject<any>();
     env_path = environment.API_URL;
-
+    url_path: string;
     // me: any | null;
     // get roleType(): string {
     //     return 'marketing';
@@ -97,9 +97,8 @@ export class EditComponent implements OnInit, AfterViewInit, OnDestroy {
     ) {
         this.formData = this._formBuilder.group({
             id: ['', Validators.required],
-            blog_category_id: '',
             name: '',
-            description: '',
+            detail: '',
             image: '',
         });
     }
@@ -115,14 +114,15 @@ export class EditComponent implements OnInit, AfterViewInit, OnDestroy {
         this.getBlogCategory();
         this.Id = this._activatedRoute.snapshot.paramMap.get('id');
         this._Service.getById(this.Id).subscribe((resp: any) => {
+            console.log('resp', resp.data)
             this.itemData = resp.data;
             this.formData.patchValue({
                 id: this.itemData.id,
-                blog_category_id: Number(this.itemData.blog_category_id),
                 name: this.itemData.name,
-                description: this.itemData.description,
-                image: this.itemData.image,
+                detail:  this.itemData.detail,
+                image: this.env_path + this.itemData.image,
             });
+            this.url_path = this.env_path + this.itemData.image
             this._changeDetectorRef.detectChanges();
         });
     }
@@ -190,7 +190,7 @@ export class EditComponent implements OnInit, AfterViewInit, OnDestroy {
                 this._Service.update(formData).subscribe({
                     next: (resp: any) => {
                         this._router
-                            .navigateByUrl('announcement/list')
+                            .navigateByUrl('shelf/list')
                             .then(() => {});
                     },
                     error: (err: any) => {

@@ -1296,7 +1296,7 @@ export class Service {
     update(data: any): Observable<any> {
         return this._httpClient
             .post(
-                environment.API_URL + '/api/update_blog',
+                environment.API_URL + '/api/update_shelf',
                 data,
                 this.httpOptionsFormdata
             )

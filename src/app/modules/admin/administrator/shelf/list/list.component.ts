@@ -231,7 +231,7 @@ export class ListComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     edit(id: string): void {
-        this._router.navigate(['announcement/edit/' + id]);
+        this._router.navigate(['shelf/edit/' + id]);
     }
 
     delete(id: any): void {
