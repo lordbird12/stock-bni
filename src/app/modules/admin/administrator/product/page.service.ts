@@ -1151,7 +1151,7 @@ export class Service {
     // * create position
     create(data: any): Observable<any> {
         return this._httpClient
-            .post(environment.API_URL + '/api/course_category', data, {
+            .post(environment.API_URL + '/api/product', data, {
                 headers: this.httpOptionsFormdata.headers,
             })
             .pipe(
@@ -1173,6 +1173,42 @@ export class Service {
             );
     }
 
+    getCategoryProduct(): Observable<any> {
+        return this._httpClient
+            .get<any>(environment.API_URL + '/api/get_category_product')
+            .pipe(
+                tap((meterial) => {
+                    this._materials.next(meterial);
+                })
+            );
+    }
+    getShelf(): Observable<any> {
+        return this._httpClient
+            .get<any>(environment.API_URL + '/api/get_shelf')
+            .pipe(
+                tap((meterial) => {
+                    this._materials.next(meterial);
+                })
+            );
+    }
+    getFloor(s_id:any): Observable<any> {
+        return this._httpClient
+            .get<any>(environment.API_URL + '/api/get_floor/' + s_id)
+            .pipe(
+                tap((meterial) => {
+                    this._materials.next(meterial);
+                })
+            );
+    }
+    getChanel(s_id : any, f_id : any): Observable<any> {
+        return this._httpClient
+            .get<any>(environment.API_URL + '/api/get_channel/' + s_id + '/' + f_id )
+            .pipe(
+                tap((meterial) => {
+                    this._materials.next(meterial);
+                })
+            );
+    }
     getCategory(): Observable<any> {
         return this._httpClient
             .get<any>(environment.API_URL + '/api/get_blog_category')
@@ -1186,7 +1222,7 @@ export class Service {
     //* get position by id
     getById(id: any): Observable<any[]> {
         return this._httpClient
-            .get<any[]>(environment.API_URL + '/api/course_category/' + id)
+            .get<any[]>(environment.API_URL + '/api/product/' + id)
             .pipe(
                 tap((meterial) => {
                     this._materials.next(meterial);
@@ -1195,10 +1231,10 @@ export class Service {
     }
 
     //   * update branch
-    update(data: any): Observable<any> {
+    update(data: FormData): Observable<any> {
         return this._httpClient
             .post(
-                environment.API_URL + '/api/update_course_category',
+                environment.API_URL + '/api/update_product',
                 data,
                 this.httpOptionsFormdata
             )
@@ -1210,9 +1246,50 @@ export class Service {
             );
     }
 
+    updateIron(data: any): Observable<any> {
+        return this._httpClient
+            .post(
+                environment.API_URL + '/api/iron',
+                data,
+            )
+            .pipe(
+                switchMap((response: any) => {
+                    // Return a new observable with the response
+                    return of(response);
+                })
+            );
+    }
+    updateClearIron(data: any): Observable<any> {
+        return this._httpClient
+            .post(
+                environment.API_URL + '/api/clear_iron',
+                data,
+            )
+            .pipe(
+                switchMap((response: any) => {
+                    // Return a new observable with the response
+                    return of(response);
+                })
+            );
+    }
+    updateAudItem(data: any): Observable<any> {
+        return this._httpClient
+            .post(
+                environment.API_URL + '/api/aud_item',
+                data,
+            )
+            .pipe(
+                switchMap((response: any) => {
+                    // Return a new observable with the response
+                    return of(response);
+                })
+            );
+    }
+
+
     delete(id: any): Observable<any> {
         return this._httpClient.delete<any>(
-            environment.API_URL + '/api/course_category/' + id,
+            environment.API_URL + '/api/product/' + id,
             { headers: this.httpOptionsFormdata.headers }
         );
     }
@@ -1220,7 +1297,7 @@ export class Service {
     getPage(dataTablesParameters: any): Observable<DataTablesResponse> {
         return this._httpClient
             .post(
-                environment.API_URL + '/api/course_category_page',
+                environment.API_URL + '/api/product_page',
                 dataTablesParameters,
                 this.httpOptionsFormdata
             )

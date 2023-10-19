@@ -64,6 +64,9 @@ export class EditComponent implements OnInit, AfterViewInit, OnDestroy {
     itemData: any = [];
 
     formData: FormGroup;
+    formDataIron: FormGroup;
+    formDataCleanIron: FormGroup;
+    formDataCompression: FormGroup;
     flashErrorMessage: string;
     flashMessage: 'success' | 'error' | null = null;
     isLoading: boolean = false;
@@ -81,7 +84,10 @@ export class EditComponent implements OnInit, AfterViewInit, OnDestroy {
 
     supplierId: string | null;
     pagination: Pagination;
-
+    shelfData: any = [];
+    shelfId: any;
+    floorData: any = [];
+    chanelData: any = [];
     /**
      * Constructor
      */
@@ -96,9 +102,70 @@ export class EditComponent implements OnInit, AfterViewInit, OnDestroy {
         private _authService: AuthService
     ) {
         this.formData = this._formBuilder.group({
-            id: ['', Validators.required],
+            id: '',
+            category_product_id: '',
+            code: '',
             name: '',
-            image: '',
+            detail: '',
+            qty: '',
+            client_code: '',
+            shelve_id: '',
+            floor_id: '',
+            channel_id: '',
+            year: '',
+            images: [],
+        });
+
+        this.formDataIron = this._formBuilder.group({
+            product_id: '',
+            date: '',
+            order: '',
+            client: '',
+            qty: '',
+            iron_use: '',
+            pad_iron: '',
+            pum: '',
+            owner: ''
+        });
+
+        this.formDataCleanIron = this._formBuilder.group({
+
+            product_id: '',
+            yod_pum_dai: '',
+            yod_nub_dai: '',
+            owner: '',
+        });
+
+        this.formDataCompression = this._formBuilder.group({
+            product_id: '',
+            machine: '',
+            yang_1: '',
+            yang_2: '',
+            hot_1: '',
+            hot_2: '',
+            time: '',
+            qty: '',
+            weight: '',
+            wang_yang_1: '',
+            wang_yang_2: '',
+            wang_yang_3: '',
+            wang_yang_4: '',
+            wang_yang_5: '',
+            wang_yang_6: '',
+            wang_yang_7: '',
+            wang_yang_8: '',
+            wang_yang_9: '',
+            wang_yang_10: '',
+            wang_son_1: '',
+            wang_son_2: '',
+            wang_son_3: '',
+            wang_son_4: '',
+            wang_son_5: '',
+            wang_son_6: '',
+            wang_son_7: '',
+            wang_son_8: '',
+            wang_son_9: '',
+            wang_son_10: ''
         });
     }
 
@@ -113,19 +180,71 @@ export class EditComponent implements OnInit, AfterViewInit, OnDestroy {
         this.Id = this._activatedRoute.snapshot.paramMap.get('id');
         this._Service.getById(this.Id).subscribe((resp: any) => {
             this.itemData = resp.data;
+            this.GetCate();
+            this.GetShelf();
+            this.GetFloor(this.itemData.shelve_id)
+            this.GetChanel(this.itemData.shelve_id, this.itemData.floor_id)
             this.formData.patchValue({
-                id: this.itemData.id,
-                name: this.itemData.name,
-                image: '',
+                ...this.itemData,
+                category_product_id: +this.itemData.category_product_id,
+                shelve_id: +this.itemData.shelve_id,
+                floor_id: +this.itemData.floor_id,
+                channel_id: +this.itemData.channel_id,
             });
+            this.formDataIron.patchValue({
+                ...this.itemData.iron,
+            })
+            this.formDataCleanIron.patchValue({
+                ...this.itemData.clear_iron,
+            })
+            this.formDataCompression.patchValue({
+                ...this.itemData.aud_item,
+            })
             this._changeDetectorRef.detectChanges();
+            console.log(this.formData.value)
+        });
+
+
+
+    }
+
+    onChangeShelf(event: any) {
+        this.shelfId = event
+        this.GetFloor(event)
+    }
+    onChangeFloor(event: any) {
+
+        this.GetChanel(this.shelfId, event)
+    }
+
+    GetCate(): void {
+        this._Service.getCategoryProduct().subscribe((resp) => {
+            this.blogData = resp.data;
+        });
+    }
+
+    GetShelf(): void {
+        this._Service.getShelf().subscribe((resp) => {
+            this.shelfData = resp.data;
+        });
+    }
+
+    GetFloor(id: any): void {
+        this._Service.getFloor(id).subscribe((resp) => {
+            this.floorData = resp.data;
+        });
+    }
+
+    GetChanel(id: any, f_id: any): void {
+        this._Service.getChanel(id, f_id).subscribe((resp) => {
+            this.chanelData = resp.data;
         });
     }
 
     /**
      * After view init
      */
-    ngAfterViewInit(): void {}
+    ngAfterViewInit(): void { }
 
     /**
      * On destroy
@@ -169,7 +288,9 @@ export class EditComponent implements OnInit, AfterViewInit, OnDestroy {
             // If the confirm button pressed...
             if (result === 'confirmed') {
                 let formValue = this.formData.value;
-
+                this.formData.patchValue({
+                    images: []
+                })
                 const formData = new FormData();
                 Object.entries(formValue).forEach(([key, value]: any[]) => {
                     formData.append(key, value);
@@ -178,8 +299,8 @@ export class EditComponent implements OnInit, AfterViewInit, OnDestroy {
                 this._Service.update(formData).subscribe({
                     next: (resp: any) => {
                         this._router
-                            .navigateByUrl('category/list')
-                            .then(() => {});
+                            .navigateByUrl('product/list')
+                            .then(() => { });
                     },
                     error: (err: any) => {
                         this._fuseConfirmationService.open({
@@ -209,6 +330,226 @@ export class EditComponent implements OnInit, AfterViewInit, OnDestroy {
             }
         });
     }
+    updateIron(): void {
+        this.formDataIron.patchValue({
+            product_id: this.Id
+        })
+        this.flashMessage = null;
+        this.flashErrorMessage = null;
+        // Return if the form is invalid
+        // if (this.formData.invalid) {
+        //     return;
+        // }
+        // Open the confirmation dialog
+        const confirmation = this._fuseConfirmationService.open({
+            title: 'แก้ไขรายการ',
+            message: 'คุณต้องการแก้ไขรายการใช่หรือไม่ ',
+            icon: {
+                show: false,
+                name: 'heroicons_outline:exclamation',
+                color: 'warning',
+            },
+            actions: {
+                confirm: {
+                    show: true,
+                    label: 'ยืนยัน',
+                    color: 'primary',
+                },
+                cancel: {
+                    show: true,
+                    label: 'ยกเลิก',
+                },
+            },
+            dismissible: true,
+        });
+
+        // Subscribe to the confirmation dialog closed action
+        confirmation.afterClosed().subscribe((result) => {
+            // If the confirm button pressed...
+            if (result === 'confirmed') {
+                let formValue = this.formDataIron.value;
+                // Disable the form
+                this._Service.updateIron(formValue).subscribe({
+                    next: (resp: any) => {
+                        this._router
+                            .navigateByUrl('product/list')
+                            .then(() => { });
+                    },
+                    error: (err: any) => {
+                        this._fuseConfirmationService.open({
+                            title: 'กรุณาระบุข้อมูล',
+                            message: err.error.message,
+                            icon: {
+                                show: true,
+                                name: 'heroicons_outline:exclamation',
+                                color: 'warning',
+                            },
+                            actions: {
+                                confirm: {
+                                    show: false,
+                                    label: 'ยืนยัน',
+                                    color: 'primary',
+                                },
+                                cancel: {
+                                    show: false,
+                                    label: 'ยกเลิก',
+                                },
+                            },
+                            dismissible: true,
+                        });
+                        // console.log(err.error.message)
+                    },
+                });
+            }
+        });
+    }
+    updateformDataCleanIron(): void {
+        this.formDataCleanIron.patchValue({
+            product_id: this.Id
+        })
+        this.flashMessage = null;
+        this.flashErrorMessage = null;
+        // Return if the form is invalid
+        // if (this.formData.invalid) {
+        //     return;
+        // }
+        // Open the confirmation dialog
+        const confirmation = this._fuseConfirmationService.open({
+            title: 'แก้ไขรายการ',
+            message: 'คุณต้องการแก้ไขรายการใช่หรือไม่ ',
+            icon: {
+                show: false,
+                name: 'heroicons_outline:exclamation',
+                color: 'warning',
+            },
+            actions: {
+                confirm: {
+                    show: true,
+                    label: 'ยืนยัน',
+                    color: 'primary',
+                },
+                cancel: {
+                    show: true,
+                    label: 'ยกเลิก',
+                },
+            },
+            dismissible: true,
+        });
+
+        // Subscribe to the confirmation dialog closed action
+        confirmation.afterClosed().subscribe((result) => {
+            // If the confirm button pressed...
+            if (result === 'confirmed') {
+                let formValue = this.formDataCleanIron.value;
+                // Disable the form
+                this._Service.updateClearIron(formValue).subscribe({
+                    next: (resp: any) => {
+                        this._router
+                            .navigateByUrl('product/list')
+                            .then(() => { });
+                    },
+                    error: (err: any) => {
+                        this._fuseConfirmationService.open({
+                            title: 'กรุณาระบุข้อมูล',
+                            message: err.error.message,
+                            icon: {
+                                show: true,
+                                name: 'heroicons_outline:exclamation',
+                                color: 'warning',
+                            },
+                            actions: {
+                                confirm: {
+                                    show: false,
+                                    label: 'ยืนยัน',
+                                    color: 'primary',
+                                },
+                                cancel: {
+                                    show: false,
+                                    label: 'ยกเลิก',
+                                },
+                            },
+                            dismissible: true,
+                        });
+                        // console.log(err.error.message)
+                    },
+                });
+            }
+        });
+    }
+    updateformAudItem(): void {
+        this.formDataCompression.patchValue({
+            product_id: this.Id
+        })
+        this.flashMessage = null;
+        this.flashErrorMessage = null;
+        // Return if the form is invalid
+        // if (this.formData.invalid) {
+        //     return;
+        // }
+        // Open the confirmation dialog
+        const confirmation = this._fuseConfirmationService.open({
+            title: 'แก้ไขรายการ',
+            message: 'คุณต้องการแก้ไขรายการใช่หรือไม่ ',
+            icon: {
+                show: false,
+                name: 'heroicons_outline:exclamation',
+                color: 'warning',
+            },
+            actions: {
+                confirm: {
+                    show: true,
+                    label: 'ยืนยัน',
+                    color: 'primary',
+                },
+                cancel: {
+                    show: true,
+                    label: 'ยกเลิก',
+                },
+            },
+            dismissible: true,
+        });
+
+        // Subscribe to the confirmation dialog closed action
+        confirmation.afterClosed().subscribe((result) => {
+            // If the confirm button pressed...
+            if (result === 'confirmed') {
+                let formValue = this.formDataCompression.value;
+                // Disable the form
+                this._Service.updateAudItem(formValue).subscribe({
+                    next: (resp: any) => {
+                        this._router
+                            .navigateByUrl('product/list')
+                            .then(() => { });
+                    },
+                    error: (err: any) => {
+                        this._fuseConfirmationService.open({
+                            title: 'กรุณาระบุข้อมูล',
+                            message: err.error.message,
+                            icon: {
+                                show: true,
+                                name: 'heroicons_outline:exclamation',
+                                color: 'warning',
+                            },
+                            actions: {
+                                confirm: {
+                                    show: false,
+                                    label: 'ยืนยัน',
+                                    color: 'primary',
+                                },
+                                cancel: {
+                                    show: false,
+                                    label: 'ยกเลิก',
+                                },
+                            },
+                            dismissible: true,
+                        });
+                        // console.log(err.error.message)
+                    },
+                });
+            }
+        });
+    }
+
 
     onSelect(event) {
         this.files.push(...event.addedFiles);

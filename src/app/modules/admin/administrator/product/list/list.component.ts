@@ -167,6 +167,9 @@ export class ListComponent implements OnInit, AfterViewInit, OnDestroy {
         this._unsubscribeAll.complete();
     }
 
+    pdf(id: any) {
+        window.open(environment.API_URL + '/api/export_product/' + id)
+    }
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
@@ -219,7 +222,7 @@ export class ListComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     edit(id: string): void {
-        this._router.navigate(['category/edit/' + id]);
+        this._router.navigate(['product/edit/' + id]);
     }
 
     delete(id: any): void {
