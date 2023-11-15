@@ -20,7 +20,7 @@ import { FuseConfirmationConfig } from '@fuse/services/confirmation/confirmation
 
             :host::ng-deep  .mat-flat-button{
                 border-radius: 0px !important;
-                background:#1CA9DF !important;
+                background:#4DB433 !important;
                 color:#ffffff !important;
                 }
 
@@ -32,13 +32,13 @@ import { FuseConfirmationConfig } from '@fuse/services/confirmation/confirmation
 
                 :host::ng-deep  .mat-stroked-button.mat-primary{
                     border-radius: 0px !important;
-                    background: #1CA9DF !important;
+                    background: #4DB433 !important;
                     color: white !important;
                 }
 
                 :host::ng-deep  .mat-stroked-button.mat-accent{
                     border-radius: 0px !important;
-                    background: #1CA9DF !important;
+                    background: #4DB433 !important;
                     color: white !important;
                 }
         `
