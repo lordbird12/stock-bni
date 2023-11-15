@@ -1225,25 +1225,6 @@ export class Service {
                 })
             );
     }
-<<<<<<< HEAD
-    delete(id: any): Observable<any> {
-        return this._httpClient.delete<any>(
-            environment.API_URL + '/api/product/' + id,
-            { headers: this.httpOptionsFormdata.headers }
-        );
-    }
-
-    deleteimage(id: any): Observable<any> {
-        return this._httpClient.get<any>(
-            environment.API_URL + '/api/delete_image/' + id,
-            { headers: this.httpOptionsFormdata.headers }
-        );
-    }
-
-    deletereview(id: any): Observable<any> {
-        return this._httpClient.delete<any>(
-            environment.API_URL + '/api/review/' + id,
-=======
 
     updateIron(data: any): Observable<any> {
         return this._httpClient
@@ -1289,7 +1270,6 @@ export class Service {
     delete(id: any): Observable<any> {
         return this._httpClient.delete<any>(
             environment.API_URL + '/api/product/' + id,
->>>>>>> b48ac7b6594cbb4f3221683766b2b45576342289
             { headers: this.httpOptionsFormdata.headers }
         );
     }

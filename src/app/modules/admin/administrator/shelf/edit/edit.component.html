@@ -73,8 +73,9 @@
                 </div>
 
             </div>
+        </form>
     </div>
-    </form>
+
     <div class="flex items-center justify-end w-full border-t px-8 py-4">
         <div class="flex items-center justify-end">
             <a class="ml-4" mat-flat-button [routerLink]="['/shelf/list']">
@@ -82,9 +83,9 @@
                 ยกเลิก
             </a>
             <button class="px-6 ml-3 mat-primary" mat-flat-button (click)="update()">
-                    <mat-icon svgIcon="heroicons_solid:check"></mat-icon>
-                    ยืนยัน
-                </button>
+                <mat-icon svgIcon="heroicons_solid:check"></mat-icon>
+                ยืนยัน
+            </button>
         </div>
     </div>
 </div>
@@ -92,9 +93,9 @@
     <div class="flex items-center justify-end w-full border-t px-10 py-4">
         <div class="flex items-center justify-end">
             <button class="px-6 mat-primary" mat-flat-button (click)="newFloor(this.itemData.id)">
-                    <mat-icon svgIcon="heroicons_solid:plus"></mat-icon>
-                    เพิ่มชั้น
-                </button>
+                <mat-icon svgIcon="heroicons_solid:plus"></mat-icon>
+                เพิ่มชั้น
+            </button>
         </div>
     </div>
     <div class="flex items-center justify-end w-full  px-5 py-4 mb-50">
@@ -103,8 +104,8 @@
                 <thead class="text-lx text-center text-white uppercase bg-gray-500 dark:bg-gray-700 dark:text-gray-400 h-10">
                     <tr>
                         <th> <button mat-button (click)="expandFunction()">
-                                    <mat-icon class="text-white" svgIcon="heroicons_outline:chevron-right"></mat-icon>
-                                </button></th>
+                                <mat-icon class="text-white" svgIcon="heroicons_outline:chevron-right"></mat-icon>
+                            </button></th>
                         <th>ลำดับ</th>
                         <th>ชื่อตู้</th>
                         <th>ชื่อชั้น</th>
@@ -121,9 +122,9 @@
                                   !dataRow[i].channels.isExpanded
                               ">
                                 <i *ngIf="!dataRow[i].channels.isExpanded"><mat-icon
-                                            svgIcon="heroicons_outline:chevron-right"></mat-icon></i>
+                                        svgIcon="heroicons_outline:chevron-right"></mat-icon></i>
                                 <i *ngIf="dataRow[i].channels.isExpanded"><mat-icon
-                                            svgIcon="heroicons_outline:chevron-up"></mat-icon></i>
+                                        svgIcon="heroicons_outline:chevron-up"></mat-icon></i>
                             </td>
                             <td style="width: 5%">
                                 {{i + 1}}
@@ -138,11 +139,11 @@
                             </td>
                             <td style="width: 15%">
                                 <button mat-button (click)="newChanel(item)">
-                                        <mat-icon svgIcon="library_add"></mat-icon>
-                                    </button>
+                                    <mat-icon svgIcon="library_add"></mat-icon>
+                                </button>
                                 <button mat-button (click)="editData(item)">
-                                        <mat-icon>edit</mat-icon>
-                                    </button>
+                                    <mat-icon>edit</mat-icon>
+                                </button>
                             </td>
                         </tr>
                         <ng-container *ngIf="dataRow[i].channels.isExpanded">
@@ -175,11 +176,11 @@
                                 </td>
                                 <td style="width: 15%">
                                     <button mat-button (click)="editChanel(chanel)">
-                                            <mat-icon>edit</mat-icon>
-                                        </button>
+                                        <mat-icon>edit</mat-icon>
+                                    </button>
                                     <button mat-button (click)="viewProduct(chanel)">
-                                            <mat-icon>visibility</mat-icon>
-                                        </button>
+                                        <mat-icon>visibility</mat-icon>
+                                    </button>
                                 </td>
                             </tr>
                             <tr class="text-lx text-center text-gray-700 uppercase bg-gray-100 dark:bg-gray-700 dark:text-gray-400 h-10  border-b" *ngIf="dataRow[i]?.channels.length == 0">
@@ -196,6 +197,4 @@
             </table>
         </div>
     </div>
-</div>
-
 </div>
