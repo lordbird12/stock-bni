@@ -9,6 +9,7 @@ import {
     ViewEncapsulation,
 } from '@angular/core';
 import {
+    FormArray,
     FormBuilder,
     FormControl,
     FormGroup,
@@ -45,8 +46,6 @@ import { Service } from '../page.service';
     animations: fuseAnimations,
 })
 export class NewComponent implements OnInit, AfterViewInit, OnDestroy {
-    @ViewChild(MatPaginator) private _paginator: MatPaginator;
-    @ViewChild(MatSort) private _sort: MatSort;
     files: File[] = [];
     files2: File[] = [];
 
@@ -72,13 +71,17 @@ export class NewComponent implements OnInit, AfterViewInit, OnDestroy {
     selectedProduct: any | null = null;
     filterForm: FormGroup;
     tagsEditMode: boolean = false;
-    private _unsubscribeAll: Subject<any> = new Subject<any>();
     env_path = environment.API_URL;
 
     item1Data: any = [];
     item2Data: any = [];
 
     itemMaxData: any = [];
+    blogData: any = [];
+    shelfData: any = [];
+    shelfId: any;
+    floorData: any = [];
+    chanelData: any = [];
 
     // me: any | null;
     // get roleType(): string {
@@ -96,11 +99,7 @@ export class NewComponent implements OnInit, AfterViewInit, OnDestroy {
         private _fuseConfirmationService: FuseConfirmationService,
         private _formBuilder: FormBuilder,
         private _Service: Service,
-        private _matDialog: MatDialog,
-        private _router: Router,
-        private _activatedRoute: ActivatedRoute,
-        private _authService: AuthService
-    ) {}
+        private _router: Router) { }
 
     // -----------------------------------------------------------------------------------------------------
     // @ Lifecycle hooks
@@ -111,30 +110,60 @@ export class NewComponent implements OnInit, AfterViewInit, OnDestroy {
      */
     async ngOnInit(): Promise<void> {
         this.formData = this._formBuilder.group({
-            name: ['', Validators.required],
-            description: ['', Validators.required],
-            price: [''],
-            sale_price: [''],
-            youtube: [''],
-            product_category_id: [''],
-            main_product_category_id: [''],
-            size_id: [''],
-            image: '',
+            category_product_id: '',
+            name: '',
+            detail: '',
+            qty: '',
+            client_code: '',
+            code: '',
+            shelve_id: '',
+            floor_id: '',
+            channel_id: '',
+            year: '',
+            images: [],
         });
-
-        this.getItem1();
-        this.getItem3();
+        this.GetCate();
+        this.GetShelf();
     }
 
-    somethingChanged(event: any): void {
-
-        this.item2Data = event.value;
+    onChangeShelf(event: any) {
+        this.shelfId = event
+        this.GetFloor(event)
     }
+    onChangeFloor(event: any) {
+
+        this.GetChanel(this.shelfId, event)
+    }
+
+    GetCate(): void {
+        this._Service.getCategoryProduct().subscribe((resp) => {
+            this.blogData = resp.data;
+        });
+    }
+
+    GetShelf(): void {
+        this._Service.getShelf().subscribe((resp) => {
+            this.shelfData = resp.data;
+        });
+    }
+
+    GetFloor(id: any): void {
+        this._Service.getFloor(id).subscribe((resp) => {
+            this.floorData = resp.data;
+        });
+    }
+
+    GetChanel(id: any, f_id: any): void {
+        this._Service.getChanel(id, f_id).subscribe((resp) => {
+            this.chanelData = resp.data;
+        });
+    }
+    discard(): void { }
 
     /**
      * After view init
      */
-    ngAfterViewInit(): void {}
+    ngAfterViewInit(): void { }
 
     /**
      * On destroy
@@ -168,6 +197,8 @@ export class NewComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     create(): void {
+        console.log(this.formData.value.image)
+
         this.flashMessage = null;
         this.flashErrorMessage = null;
 
@@ -198,51 +229,26 @@ export class NewComponent implements OnInit, AfterViewInit, OnDestroy {
             // If the confirm button pressed...
             if (result === 'confirmed') {
                 let formValue = this.formData.value;
-
                 const formData = new FormData();
+
                 Object.entries(formValue).forEach(([key, value]: any[]) => {
-                    formData.append(key, value);
+                    if (key != 'images') {
+                        formData.append(key, value);
+                    }
                 });
+                for (var i = 0; i < this.files.length; i++) {
+                    formData.append('images[]', this.files[i]);
+                }
 
                 for (var i = 0; i < this.files2.length; i++) {
                     formData.append('images[]', this.files2[i]);
                 }
 
                 this._Service.create(formData).subscribe({
-                    next: (resp: any) => {
-                        const confirmation2 =
-                            this._fuseConfirmationService.open({
-                                title: 'บันทึกข้อมูลสำเร็จ',
-                                message: 'ข้อมูลถูกบันทึกสำเร็จ!',
-                                icon: {
-                                    show: true,
-                                    name: 'heroicons_outline:success',
-                                    color: 'success',
-                                },
-                                actions: {
-                                    confirm: {
-                                        show: true,
-                                        label: 'ยืนยัน',
-                                        color: 'primary',
-                                    },
-                                    cancel: {
-                                        show: false,
-                                        label: 'ยกเลิก',
-                                    },
-                                },
-                                dismissible: false,
-                            });
-
-                        confirmation2.afterClosed().subscribe((result) => {
-                            // If the confirm button pressed...
-                            if (result === 'confirmed') {
-                                this._router
-                                    .navigateByUrl(
-                                        'products/edit/' + resp.data.id
-                                    )
-                                    .then(() => {});
-                            }
-                        });
+                    next: () => {
+                        this._router
+                            .navigateByUrl('product/list')
+                            .then(() => { });
                     },
                     error: (err: any) => {
                         this._fuseConfirmationService.open({
@@ -279,9 +285,7 @@ export class NewComponent implements OnInit, AfterViewInit, OnDestroy {
         setTimeout(() => {
             this._changeDetectorRef.detectChanges();
         }, 150);
-        this.formData.patchValue({
-            image: this.files[0],
-        });
+
     }
 
     onRemove(event) {

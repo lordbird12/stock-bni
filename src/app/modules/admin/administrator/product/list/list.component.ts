@@ -167,6 +167,9 @@ export class ListComponent implements OnInit, AfterViewInit, OnDestroy {
         this._unsubscribeAll.complete();
     }
 
+    pdf(id: any) {
+        window.open(environment.API_URL + '/api/export_product/' + id)
+    }
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------

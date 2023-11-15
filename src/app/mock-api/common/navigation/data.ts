@@ -39,13 +39,13 @@ export const defaultNavigation: FuseNavigationItem[] = [
             {
                 title: 'รายงานแม่พิมพ์',
                 type: 'basic',
-                link: '/report/list',
+                // link: '/report/list',
                 icon: 'heroicons_outline:users',
             },
             {
                 title: 'รายงานตู้เก็บแม่พิมพ์',
                 type: 'basic',
-                link: '/report/list',
+                // link: '/report/list',
                 icon: 'heroicons_outline:book-open',
             },
         ],

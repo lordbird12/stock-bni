@@ -143,8 +143,13 @@ export class EditFloorsComponent implements OnInit, AfterViewInit, OnDestroy {
             this.blogData = resp.data;
         });
     }
-    discard(): void {}
+    discard(): void {
 
+    }
+
+    onClose():void {
+        this._matDialogRef.close();
+    }
     /**
      * After view init
      */

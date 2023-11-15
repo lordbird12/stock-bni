@@ -6,7 +6,7 @@
             <!-- Title -->
             <div class="mt-2">
                 <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
-                    เพิ่มชั้น
+                    แก้ไขชั้น
                 </h2>
             </div>
 
@@ -59,7 +59,7 @@
         </form>
         <div class="flex items-center justify-end w-full border-t px-8 py-4">
             <div class="flex items-center justify-end">
-                <a class="ml-4" mat-flat-button href="announcement/list">
+                <a class="ml-4" mat-flat-button (click)="onClose()">
                     <mat-icon svgIcon="heroicons_solid:x"></mat-icon>
                     ยกเลิก
                 </a>

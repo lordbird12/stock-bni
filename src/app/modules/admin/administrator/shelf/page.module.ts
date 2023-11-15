@@ -44,10 +44,22 @@ import { NewFloorsComponent } from './new-floors/new-floors.component';
 import { EditChanelComponent } from './edit-chanel/edit-chanel.component';
 import { ViewProductComponent } from './view-product/view-product.component';
 import { NewChanelComponent } from './new-chanel/new-chanel.component';
+import { CommonModule } from '@angular/common';
 @NgModule({
-    declarations: [PageComponent, ListComponent, NewComponent, EditComponent, AddComponent, EditFloorsComponent, NewFloorsComponent,NewChanelComponent, EditChanelComponent,ViewProductComponent],
+    declarations: [
+        PageComponent,
+        ListComponent,
+        NewComponent,
+        EditComponent,
+        AddComponent,
+        EditFloorsComponent,
+        NewFloorsComponent,
+        NewChanelComponent,
+        EditChanelComponent,
+        ViewProductComponent],
     imports: [
         RouterModule.forChild(positionRoute),
+        CommonModule,
         MatButtonModule,
         MatCheckboxModule,
         MatFormFieldModule,

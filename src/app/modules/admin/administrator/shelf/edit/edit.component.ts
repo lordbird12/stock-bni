@@ -130,9 +130,9 @@ export class EditComponent implements OnInit, AfterViewInit, OnDestroy {
                 id: this.itemData.id,
                 name: this.itemData.name,
                 detail: this.itemData.detail,
-                image: this.env_path + this.itemData.image,
+                image: ''
             });
-            this.url_path = this.env_path + this.itemData.image
+            this.url_path = this.itemData.image
             this._changeDetectorRef.detectChanges();
             for (let i = 0; i < this.dataRow.length; i++) {
                 for (let j = 0; j < this.dataRow[i].channels.length; j++) {

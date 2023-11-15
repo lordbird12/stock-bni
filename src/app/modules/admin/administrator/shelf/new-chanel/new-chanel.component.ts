@@ -7,26 +7,17 @@ import {
     OnDestroy,
     OnInit,
     ViewChild,
-    ViewEncapsulation,
 } from '@angular/core';
 import {
     FormArray,
     FormBuilder,
     FormControl,
     FormGroup,
-    Validators,
 } from '@angular/forms';
-import { MatCheckboxChange } from '@angular/material/checkbox';
-import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import {
-    debounceTime,
-    map,
-    merge,
-    Observable,
     Subject,
-    switchMap,
-    takeUntil,
 } from 'rxjs';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
@@ -34,8 +25,7 @@ import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dial
 import { ActivatedRoute, Router } from '@angular/router';
 import { environment } from 'environments/environment';
 import { AuthService } from 'app/core/auth/auth.service';
-import { sortBy, startCase } from 'lodash-es';
-import { AssetType, Pagination } from '../page.types';
+import { Pagination } from '../page.types';
 import { Service } from '../page.service';
 // import { ImportOSMComponent } from '../card/import-osm/import-osm.component';
 
@@ -44,14 +34,13 @@ import { Service } from '../page.service';
     templateUrl: './new-chanel.component.html',
     styleUrls: ['./new-chanel.component.scss'],
     animations: fuseAnimations,
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NewChanelComponent implements OnInit, AfterViewInit, OnDestroy {
 
     public dtOptions: DataTables.Settings = {};
     public dataRow: any[];
 
-    @ViewChild(MatPaginator) private _paginator: MatPaginator;
-    @ViewChild(MatSort) private _sort: MatSort;
     files: File[] = [];
     files2: File[] = [];
 
@@ -78,7 +67,6 @@ export class NewChanelComponent implements OnInit, AfterViewInit, OnDestroy {
     selectedProduct: any | null = null;
     filterForm: FormGroup;
     tagsEditMode: boolean = false;
-    private _unsubscribeAll: Subject<any> = new Subject<any>();
     env_path = environment.API_URL;
     url_path: string;
     // me: any | null;
@@ -96,10 +84,6 @@ export class NewChanelComponent implements OnInit, AfterViewInit, OnDestroy {
         private _fuseConfirmationService: FuseConfirmationService,
         private _formBuilder: FormBuilder,
         private _Service: Service,
-        private _matDialog: MatDialog,
-        private _router: Router,
-        private _activatedRoute: ActivatedRoute,
-        private _authService: AuthService,
         private _changeDetectorRef: ChangeDetectorRef,
         @Inject(MAT_DIALOG_DATA) private _data:any,
         private _matDialogRef: MatDialogRef<NewChanelComponent>
@@ -119,6 +103,7 @@ export class NewChanelComponent implements OnInit, AfterViewInit, OnDestroy {
      * On init
      */
     ngOnInit(): void {
+        console.log(this._data.data)
         this.getBlogCategory();
         this.getFloor(this._data.data.shelve_id);
 
