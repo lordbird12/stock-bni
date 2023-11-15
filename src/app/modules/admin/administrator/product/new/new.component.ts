@@ -61,6 +61,10 @@ export class NewComponent implements OnInit, AfterViewInit, OnDestroy {
     ];
 
     formData: FormGroup;
+    formData2: FormGroup;
+
+    max: boolean = false;
+
     flashErrorMessage: string;
     flashMessage: 'success' | 'error' | null = null;
     isLoading: boolean = false;
@@ -71,7 +75,10 @@ export class NewComponent implements OnInit, AfterViewInit, OnDestroy {
     private _unsubscribeAll: Subject<any> = new Subject<any>();
     env_path = environment.API_URL;
 
-    blogData: any = [];
+    item1Data: any = [];
+    item2Data: any = [];
+
+    itemMaxData: any = [];
 
     // me: any | null;
     // get roleType(): string {
@@ -105,18 +112,24 @@ export class NewComponent implements OnInit, AfterViewInit, OnDestroy {
     async ngOnInit(): Promise<void> {
         this.formData = this._formBuilder.group({
             name: ['', Validators.required],
+            description: ['', Validators.required],
+            price: [''],
+            sale_price: [''],
+            youtube: [''],
+            product_category_id: [''],
+            main_product_category_id: [''],
+            size_id: [''],
             image: '',
         });
-        this.getBlogCategory();
+
+        this.getItem1();
+        this.getItem3();
     }
 
-    getBlogCategory(): void {
-        this._Service.getCategory().subscribe((resp) => {
-            this.blogData = resp.data;
-        });
-    }
+    somethingChanged(event: any): void {
 
-    discard(): void {}
+        this.item2Data = event.value;
+    }
 
     /**
      * After view init
@@ -128,6 +141,30 @@ export class NewComponent implements OnInit, AfterViewInit, OnDestroy {
      */
     ngOnDestroy(): void {
         // Unsubscribe from all subscriptions
+    }
+
+    getItem(): void {
+        this._Service.getCategory().subscribe((resp) => {
+            this.item1Data = resp.data;
+        });
+    }
+
+    getItem1(): void {
+        this._Service.getCategory1().subscribe((resp) => {
+            this.item1Data = resp.data;
+        });
+    }
+
+    getItem2(): void {
+        this._Service.getCategory1().subscribe((resp) => {
+            this.item2Data = resp.data;
+        });
+    }
+
+    getItem3(): void {
+        this._Service.getCategory3().subscribe((resp) => {
+            this.itemMaxData = resp.data.sizes;
+        });
     }
 
     create(): void {
@@ -167,11 +204,45 @@ export class NewComponent implements OnInit, AfterViewInit, OnDestroy {
                     formData.append(key, value);
                 });
 
+                for (var i = 0; i < this.files2.length; i++) {
+                    formData.append('images[]', this.files2[i]);
+                }
+
                 this._Service.create(formData).subscribe({
                     next: (resp: any) => {
-                        this._router
-                            .navigateByUrl('category/list')
-                            .then(() => {});
+                        const confirmation2 =
+                            this._fuseConfirmationService.open({
+                                title: 'บันทึกข้อมูลสำเร็จ',
+                                message: 'ข้อมูลถูกบันทึกสำเร็จ!',
+                                icon: {
+                                    show: true,
+                                    name: 'heroicons_outline:success',
+                                    color: 'success',
+                                },
+                                actions: {
+                                    confirm: {
+                                        show: true,
+                                        label: 'ยืนยัน',
+                                        color: 'primary',
+                                    },
+                                    cancel: {
+                                        show: false,
+                                        label: 'ยกเลิก',
+                                    },
+                                },
+                                dismissible: false,
+                            });
+
+                        confirmation2.afterClosed().subscribe((result) => {
+                            // If the confirm button pressed...
+                            if (result === 'confirmed') {
+                                this._router
+                                    .navigateByUrl(
+                                        'products/edit/' + resp.data.id
+                                    )
+                                    .then(() => {});
+                            }
+                        });
                     },
                     error: (err: any) => {
                         this._fuseConfirmationService.open({
@@ -218,6 +289,18 @@ export class NewComponent implements OnInit, AfterViewInit, OnDestroy {
         this.formData.patchValue({
             image: '',
         });
+    }
+
+    onSelect2(event) {
+        this.files2.push(...event.addedFiles);
+        // Trigger Image Preview
+        setTimeout(() => {
+            this._changeDetectorRef.detectChanges();
+        }, 150);
+    }
+
+    onRemove2(event) {
+        this.files2.splice(this.files2.indexOf(event), 1);
     }
 
     showFlashMessage(type: 'success' | 'error'): void {

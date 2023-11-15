@@ -7,12 +7,12 @@
             <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
         </div>
         <!-- Title -->
-        <div class="text-4xl font-extrabold tracking-tight">หมวดหมู่คอร์ส</div>
+        <div class="text-4xl font-extrabold tracking-tight">แม่พิมพ์</div>
         <!-- Actions -->
         <div class="flex shrink-0 items-center mt-6 sm:mt-0 sm:ml-4">
 
             <!-- Add product button -->
-            <a routerLink="../../category/new" class="ml-4" mat-flat-button [color]="'primary'">
+            <a routerLink="../../product/new" class="ml-4" mat-flat-button [color]="'primary'">
                 <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
                 <span class="ml-2 mr-1">เพิ่มใหม่</span>
             </a>
@@ -29,25 +29,25 @@
                 <thead>
                     <tr>
                         <th>ลำดับ</th>
-                        <th>ชื่อ</th>
-                        <th>สร้างโดย</th>
+                        <th>รูป</th>
+                        <th>ชื่อแม่พิมพ์</th>
+                        <th>สถานที่เก็บ</th>
                         <th>วันที่สร้าง</th>
-                        <th>รูปปก</th>
                         <th>จัดการ</th>
                     </tr>
                 </thead>
                 <tbody *ngIf="dataRow?.length != 0">
                     <tr *ngFor="let item of dataRow; let i = index">
                         <td>{{ pages.begin + (i + 1) }}</td>
-                        <td style="width:40%">{{ item.name }}</td>
-                        <td>Admin</td>
-                        <td>{{ item.created_at }}</td>
-                        <td>
-                            <button mat-button (click)="showPicture(item.image)">
-                                <mat-icon>image</mat-icon>
-                            </button>
+                        <td style="width:5%">
+                            <img (click)="showPicture(item.images[0].image)" [src]="item.images[0].image" class="h-auto w-50" />
                         </td>
-                        <td>
+                        <td style="width:20%">{{ item.name }}</td>
+                        <td style="width:20%">
+                            ตู้เก็บ : {{ item.shelf.name }}<br> ชั้นเก็บ : {{ item.floor.name }}<br> ช่องเก็บ : {{ item.channel.name }}
+                        </td>
+                        <td>{{ item.created_at }}</td>
+                        <td style="width: 15%">
                             <button mat-button (click)="edit(item.id)">
                                 <mat-icon>edit</mat-icon>
                             </button>

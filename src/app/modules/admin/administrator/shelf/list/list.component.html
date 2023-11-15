@@ -62,8 +62,10 @@
                                                 <div class="text-5xl sm:text-6xl font-bold tracking-tight leading-none text-gold-500">
                                                     {{ item.summary | currency : " " : "symbol" }}
                                                 </div>
+
                                                 <div class="text-lg font-medium text-gold-600 dark:text-gold-500">
-                                                    {{ item.description }}
+                                                    <img [src]="item.image" class="h-50 w-auto" />
+                                                    <br> {{item.description}}
                                                 </div>
                                                 <div class="flex items-baseline justify-center w-full mt-5 text-secondary">
                                                     <div class="text-md font-medium truncate">
