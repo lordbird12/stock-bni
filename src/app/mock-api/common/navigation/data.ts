@@ -31,7 +31,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 title: 'ลูกค้า',
                 type: 'basic',
                 icon: 'heroicons_outline:emoji-happy',
-                link: '/client/list',
+                link: '/customer/list',
             },
 
             {
