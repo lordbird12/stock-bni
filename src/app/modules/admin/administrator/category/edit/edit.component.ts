@@ -191,17 +191,17 @@ export class EditComponent implements OnInit, AfterViewInit, OnDestroy {
         confirmation.afterClosed().subscribe((result) => {
             // If the confirm button pressed...
             if (result === 'confirmed') {
-                let formValue = this.formData.value;
+                // let formValue = this.formData.value;
 
-                const formData = new FormData();
-                Object.entries(formValue).forEach(([key, value]: any[]) => {
-                    formData.append(key, value);
-                });
+                // const formData = new FormData();
+                // Object.entries(formValue).forEach(([key, value]: any[]) => {
+                //     formData.append(key, value);
+                // });
                 // Disable the form
-                this._Service.update(formData).subscribe({
+                this._Service.update( this.formData.value, this.Id ).subscribe({
                     next: (resp: any) => {
                         this._router
-                            .navigateByUrl('shelf/list')
+                            .navigateByUrl('product-category/list')
                             .then(() => { });
                     },
                     error: (err: any) => {

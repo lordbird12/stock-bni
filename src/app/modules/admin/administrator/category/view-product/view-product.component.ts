@@ -3,13 +3,13 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
+    Inject,
     OnDestroy,
     OnInit,
     ViewChild,
     ViewEncapsulation,
 } from '@angular/core';
 import {
-    FormArray,
     FormBuilder,
     FormControl,
     FormGroup,
@@ -29,7 +29,7 @@ import {
 } from 'rxjs';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
-import { MatDialog } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { environment } from 'environments/environment';
 import { AuthService } from 'app/core/auth/auth.service';
@@ -39,16 +39,23 @@ import { Service } from '../page.service';
 // import { ImportOSMComponent } from '../card/import-osm/import-osm.component';
 
 @Component({
-    selector: 'new',
-    templateUrl: './new.component.html',
-    styleUrls: ['./new.component.scss'],
-
+    selector: 'view-product',
+    templateUrl: './view-product.component.html',
+    styleUrls: ['./view-product.component.scss'],
     animations: fuseAnimations,
 })
-export class NewComponent implements OnInit, AfterViewInit, OnDestroy {
+export class ViewProductComponent implements OnInit, AfterViewInit, OnDestroy {
+
+    public dtOptions: DataTables.Settings = {};
+    public dataRow: any[];
+
+    @ViewChild(MatPaginator) private _paginator: MatPaginator;
+    @ViewChild(MatSort) private _sort: MatSort;
     files: File[] = [];
     files2: File[] = [];
 
+    blogData: any = [];
+    floorData: any = [];
     statusData: any = [
         { value: true, name: 'เปิดใช้งาน' },
         { value: false, name: 'ปิดใช้งาน' },
@@ -59,11 +66,10 @@ export class NewComponent implements OnInit, AfterViewInit, OnDestroy {
         { value: false, name: 'ไม่แจ้งเตือน' },
     ];
 
+    Id: string;
+    itemData: any = [];
+
     formData: FormGroup;
-    formData2: FormGroup;
-
-    max: boolean = false;
-
     flashErrorMessage: string;
     flashMessage: 'success' | 'error' | null = null;
     isLoading: boolean = false;
@@ -71,19 +77,9 @@ export class NewComponent implements OnInit, AfterViewInit, OnDestroy {
     selectedProduct: any | null = null;
     filterForm: FormGroup;
     tagsEditMode: boolean = false;
+    private _unsubscribeAll: Subject<any> = new Subject<any>();
     env_path = environment.API_URL;
-
-    item1Data: any = [];
-    item2Data: any = [];
-
-    itemMaxData: any = [];
-    blogData: any = [];
-    customerData: any = [];
-    shelfData: any = [];
-    shelfId: any;
-    floorData: any = [];
-    chanelData: any = [];
-
+    url_path: string;
     // me: any | null;
     // get roleType(): string {
     //     return 'marketing';
@@ -96,13 +92,25 @@ export class NewComponent implements OnInit, AfterViewInit, OnDestroy {
      * Constructor
      */
     constructor(
-        private _changeDetectorRef: ChangeDetectorRef,
         private _fuseConfirmationService: FuseConfirmationService,
         private _formBuilder: FormBuilder,
         private _Service: Service,
-        private _router: Router) {
-            this.GetCustomer();
-        }
+        private _matDialog: MatDialog,
+        private _router: Router,
+        private _activatedRoute: ActivatedRoute,
+        private _authService: AuthService,
+        private _changeDetectorRef: ChangeDetectorRef,
+        @Inject(MAT_DIALOG_DATA) private _data:any,
+        private _matDialogRef: MatDialogRef<ViewProductComponent>
+    ) {
+        this.formData = this._formBuilder.group({
+            id: ['', Validators.required],
+            name: '',
+            detail: '',
+            shelve_id: '',
+            floor_id: '',
+        });
+    }
 
     // -----------------------------------------------------------------------------------------------------
     // @ Lifecycle hooks
@@ -111,86 +119,27 @@ export class NewComponent implements OnInit, AfterViewInit, OnDestroy {
     /**
      * On init
      */
-    async ngOnInit(): Promise<void> {
-        this.formData = this._formBuilder.group({
-            category_product_id: '',
-            name: '',
-            detail: '',
-            qty: '',
-            shelve_id: '',
-            floor_id: '',
-            channel_id: '',
-            year: '',
-            images: [],
-            code: '',
-            client_code: '',
-            client_name: '',
-            phone: '',
-            email: '',
-            address: '',
-            tax: '',
-            hold: '',
-        });
-        this.GetCate();
-        this.GetShelf();
+    ngOnInit(): void {
+        this.dataRow = this._data.data.product;
+        this._changeDetectorRef.detectChanges();
     }
 
-    onChangeShelf(event: any) {
-        this.shelfId = event
-        this.GetFloor(event)
-    }
-    onChangeFloor(event: any) {
-
-        this.GetChanel(this.shelfId, event)
-    }
-
-    GetCate(): void {
-        this._Service.getCategoryProduct().subscribe((resp) => {
+    getBlogCategory(): void {
+        this._Service.getShelf().subscribe((resp) => {
+        // console.log(resp)
             this.blogData = resp.data;
         });
     }
-
-    GetCustomer(): void {
-        this._Service.getCustomer().subscribe((resp) => {
-            this.customerData = resp.data;
-        });
-    }
-
-    onChangeCustomer(event: any) {
-        let value = this.customerData.filter(item => item.id === event)
-        console.log(value[0].code)
-        this.formData.patchValue({
-            code : value[0].code,
-            name : value[0].name,
-            phone : value[0].phone,
-            email : value[0].email,
-            address : value[0].address,
-        })
-    }
-
-    GetShelf(): void {
-        this._Service.getShelf().subscribe((resp) => {
-            this.shelfData = resp.data;
-        });
-    }
-
-    GetFloor(id: any): void {
-        this._Service.getFloor(id).subscribe((resp) => {
-            this.floorData = resp.data;
-        });
-    }
-
-    GetChanel(id: any, f_id: any): void {
-        this._Service.getChanel(id, f_id).subscribe((resp) => {
-            this.chanelData = resp.data;
-        });
-    }
-    discard(): void { }
-
+    // getFloor(): void {
+    //     this._Service.getChanel().subscribe((resp) => {
+    //     // console.log(resp)
+    //         this.floorData = resp.data;
+    //     });
+    // }
     /**
      * After view init
      */
-    ngAfterViewInit(): void { }
+    ngAfterViewInit(): void {}
 
     /**
      * On destroy
@@ -199,39 +148,16 @@ export class NewComponent implements OnInit, AfterViewInit, OnDestroy {
         // Unsubscribe from all subscriptions
     }
 
-    getItem(): void {
-        this._Service.getCategory().subscribe((resp) => {
-            this.item1Data = resp.data;
-        });
+    onClose():void {
+        this._matDialogRef.close();
     }
 
-    getItem1(): void {
-        this._Service.getCategory1().subscribe((resp) => {
-            this.item1Data = resp.data;
-        });
-    }
-
-    getItem2(): void {
-        this._Service.getCategory1().subscribe((resp) => {
-            this.item2Data = resp.data;
-        });
-    }
-
-    getItem3(): void {
-        this._Service.getCategory3().subscribe((resp) => {
-            this.itemMaxData = resp.data.sizes;
-        });
-    }
-
-    create(): void {
-        console.log(this.formData.value.image)
-
+    update(): void {
         this.flashMessage = null;
         this.flashErrorMessage = null;
-
         const confirmation = this._fuseConfirmationService.open({
-            title: 'สร้างรายการใหม่',
-            message: 'คุณต้องการสร้างรายการใหม่ใช่หรือไม่ ',
+            title: 'แก้ไขรายการ',
+            message: 'คุณต้องการแก้ไขรายการใช่หรือไม่ ',
             icon: {
                 show: false,
                 name: 'heroicons_outline:exclamation',
@@ -256,26 +182,15 @@ export class NewComponent implements OnInit, AfterViewInit, OnDestroy {
             // If the confirm button pressed...
             if (result === 'confirmed') {
                 let formValue = this.formData.value;
-                const formData = new FormData();
 
-                Object.entries(formValue).forEach(([key, value]: any[]) => {
-                    if (key != 'images') {
-                        formData.append(key, value);
-                    }
-                });
-                for (var i = 0; i < this.files.length; i++) {
-                    formData.append('images[]', this.files[i]);
-                }
-
-                for (var i = 0; i < this.files2.length; i++) {
-                    formData.append('images[]', this.files2[i]);
-                }
-
-                this._Service.create(formData).subscribe({
-                    next: () => {
-                        this._router
-                            .navigateByUrl('product/list')
-                            .then(() => { });
+                // const formData = new FormData();
+                // Object.entries(formValue).forEach(([key, value]: any[]) => {
+                //     formData.append(key, value);
+                // });
+                // Disable the form
+                this._Service.updateChanel(formValue, formValue.id).subscribe({
+                    next: (resp: any) => {
+                     this._matDialogRef.close()
                     },
                     error: (err: any) => {
                         this._fuseConfirmationService.open({
@@ -299,7 +214,7 @@ export class NewComponent implements OnInit, AfterViewInit, OnDestroy {
                             },
                             dismissible: true,
                         });
-                        // console.log(err.error.message);
+                        // console.log(err.error.message)
                     },
                 });
             }
@@ -312,7 +227,9 @@ export class NewComponent implements OnInit, AfterViewInit, OnDestroy {
         setTimeout(() => {
             this._changeDetectorRef.detectChanges();
         }, 150);
-
+        this.formData.patchValue({
+            image: this.files[0],
+        });
     }
 
     onRemove(event) {
@@ -320,18 +237,6 @@ export class NewComponent implements OnInit, AfterViewInit, OnDestroy {
         this.formData.patchValue({
             image: '',
         });
-    }
-
-    onSelect2(event) {
-        this.files2.push(...event.addedFiles);
-        // Trigger Image Preview
-        setTimeout(() => {
-            this._changeDetectorRef.detectChanges();
-        }, 150);
-    }
-
-    onRemove2(event) {
-        this.files2.splice(this.files2.indexOf(event), 1);
     }
 
     showFlashMessage(type: 'success' | 'error'): void {

@@ -16,6 +16,12 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 link: '/shelf/list',
             },
             {
+                title: 'ประเภทแม่พิมพ์',
+                type: 'basic',
+                icon: 'heroicons_outline:exclamation-circle',
+                link: '/product-category/list',
+            },
+            {
                 title: 'แม่พิมพ์',
                 type: 'basic',
                 icon: 'heroicons_outline:exclamation-circle',
@@ -26,6 +32,13 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 type: 'basic',
                 icon: 'heroicons_outline:emoji-happy',
                 link: '/client/list',
+            },
+
+            {
+                title: 'ใบงาน',
+                type: 'basic',
+                icon: 'heroicons_outline:emoji-happy',
+                link: '/order/list',
             },
         ],
     },

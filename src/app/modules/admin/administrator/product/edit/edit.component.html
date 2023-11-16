@@ -1,4 +1,4 @@
-2<div class="flex flex-col flex-auto min-w-0 bg-card dark:bg-transparent">
+<div class="flex flex-col flex-auto min-w-0 bg-card dark:bg-transparent">
 
     <!-- Header -->
     <div
@@ -10,15 +10,12 @@
                     แก้ไขแม่พิมพ์
                 </h2>
             </div>
-
         </div>
     </div>
-
     <!-- Main -->
-
     <div class="flex-auto p-3 sm:p-10">
         <mat-tab-group class="flex sm:px-2" [animationDuration]="'0'">
-            <mat-tab label="แก้ไขแม่พิมพ์">
+            <mat-tab label="แม่พิมพ์">
                 <ng-template matTabContent>
                     <form [formGroup]="formData">
                         <div class="flex-auto p-6 sm:p-10">
@@ -107,6 +104,14 @@
                                     <div class="-mx-3 md:flex mb-6">
                                         <div class="md:w-full px-3 mb-6 md:mb-0">
                                             <mat-form-field class="w-full">
+                                                <mat-label>จำนวนหลุม</mat-label>
+                                                <input matInput [placeholder]="'จำนวนหลุม'" formControlName="hold">
+                                            </mat-form-field>
+                                        </div>
+                                    </div>
+                                    <div class="-mx-3 md:flex mb-6">
+                                        <div class="md:w-full px-3 mb-6 md:mb-0">
+                                            <mat-form-field class="w-full">
                                                 <mat-label>รายละเอียด</mat-label>
                                                 <textarea matInput [placeholder]="'กรอกรายละเอียดเพิ่มเติม'" [rows]="5"
                                                     formControlName="detail"></textarea>
@@ -147,367 +152,53 @@
                     </form>
                 </ng-template>
             </mat-tab>
-            <mat-tab label="แผนกเหล็ก">
+            <mat-tab label="ประวัติใบงาน">
                 <ng-template matTabContent>
-                    <form [formGroup]="formDataIron">
-                        <div class="flex-auto p-6 sm:p-10">
-                            <div class="grid gap-4 sm:grid-cols-1 w-full md:grid-cols-1">
-                                <div
-                                    class="bg-card rounded-xl md:shadow overflow-hidden px-8 pt-6 pb-8 mb-4 flex flex-col my-2">
-                                    <div class="-mx-3 md:flex mb-6">
-                                        <div class="md:w-1/2 px-3 mb-6 md:mb-0">
-                                            <mat-form-field class="w-full">
-                                                <mat-label>วันที่</mat-label>
-                                                <!-- <input matInput [placeholder]="'วันที่'" formControlName="date"> -->
-                                                <input matInput [matDatepicker]="picker" formControlName="date">
-                                                <mat-datepicker-toggle matIconSuffix
-                                                    [for]="picker"></mat-datepicker-toggle>
-                                                <mat-datepicker #picker></mat-datepicker>
-                                            </mat-form-field>
-                                        </div>
-                                        <div class="md:w-1/2 px-3 mb-6 md:mb-0">
-                                            <mat-form-field class="w-full">
-                                                <mat-label>รายการ</mat-label>
-                                                <input matInput [placeholder]="'รายการ'" formControlName="order">
-                                            </mat-form-field>
-                                        </div>
-                                    </div>
+                    <div class="relative overflow-x-auto">
+                        <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                            <thead
+                                class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3">
+                                        ลำดับ
+                                    </th>
+                                    <th scope="col" class="px-6 py-3">
+                                    <th scope="col" class="px-6 py-3">
+                                        ลูกค้า
+                                    </th>
+                                    <th scope="col" class="px-6 py-3">
+                                        วันที่สั่งซื้อ
+                                    </th>
+                                    <th scope="col" class="px-6 py-3">
+                                       #
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700" *ngFor="let item of this.itemData.orders; let i = index">
+                                    <th scope="row"
+                                        class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                        {{ i + 1}}
+                                    </th>
+                                    <td class="px-6 py-4">
+                                       {{ item.or_no}}
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        {{item.client.name}} {{item.client.phone}}
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        {{ item.client.created_at  | date : "dd-MM-yyyy hh:mm a "}}
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <button mat-button (click)="Edit(item.id)">
+                                            <mat-icon>edit</mat-icon>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
 
-                                    <div class="-mx-3 md:flex mb-6">
-                                        <div class="md:w-1/2 px-3 mb-6 md:mb-0">
-                                            <mat-form-field class="w-full">
-                                                <mat-label>ลูกค้า</mat-label>
-                                                <input matInput [placeholder]="'ลูกค้า'" formControlName="client">
-                                            </mat-form-field>
-                                        </div>
-                                        <div class="md:w-1/2 px-3 mb-6 md:mb-0">
-                                            <mat-form-field class="w-full">
-                                                <mat-label>จำนวนที่สั่ง</mat-label>
-                                                <input matInput [placeholder]="'ลูกค้า'" formControlName="qty">
-                                            </mat-form-field>
-                                        </div>
-                                    </div>
-                                    <div class="-mx-3 md:flex mb-6">
-                                        <div class="md:w-1/2 px-3 mb-6 md:mb-0">
-                                            <mat-form-field class="w-full">
-                                                <mat-label>เหล็กที่ใช้ขนาด</mat-label>
-                                                <input matInput [placeholder]="'ลูกค้า'" formControlName="iron_use">
-                                            </mat-form-field>
-                                        </div>
-                                        <div class="md:w-1/2 px-3 mb-6 md:mb-0">
-                                            <mat-form-field class="w-full">
-                                                <mat-label>ปาดเหล็ก ? </mat-label>
-                                                <input matInput [placeholder]="'ลูกค้า'" formControlName="pad_iron">
-                                            </mat-form-field>
-                                        </div>
-                                    </div>
-
-                                    <div class="-mx-3 md:flex mb-6">
-                                        <div class="md:w-1/2 px-3 mb-6 md:mb-0">
-                                            <mat-form-field class="w-full">
-                                                <mat-label>ปั้มได้ </mat-label>
-                                                <input matInput [placeholder]="'ลูกค้า'" formControlName="pum">
-                                            </mat-form-field>
-                                        </div>
-                                        <div class="md:w-1/2 px-3 mb-6 md:mb-0">
-                                            <mat-form-field class="w-full">
-                                                <mat-label>ชื่อคนที่ดูแล </mat-label>
-                                                <input matInput [placeholder]="'ลูกค้า'" formControlName="owner">
-                                            </mat-form-field>
-                                        </div>
-                                    </div>
-
-                                    <div class="flex items-center justify-end w-full border-t px-8 py-4">
-                                        <div class="flex items-center justify-end">
-                                            <a class="ml-4" mat-flat-button routerLink="/product/list">
-                                                <mat-icon svgIcon="heroicons_solid:x"></mat-icon>
-                                                ยกเลิก
-                                            </a>
-                                            <button class="px-6 ml-3 mat-primary" mat-flat-button (click)="updateIron()">
-                                                <mat-icon svgIcon="heroicons_solid:check"></mat-icon>
-                                                ยืนยัน
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                </ng-template>
-            </mat-tab>
-            <mat-tab label="แผนกล้างเหล็ก">
-                <ng-template matTabContent>
-                    <form [formGroup]="formDataCleanIron">
-                        <div class="flex-auto p-6 sm:p-10">
-                            <div class="grid gap-4 sm:grid-cols-1 w-full md:grid-cols-1">
-                                <div
-                                    class="bg-card rounded-xl md:shadow overflow-hidden px-8 pt-6 pb-8 mb-4 flex flex-col my-2">
-                                    <div class="-mx-3 md:flex mb-6">
-                                        <div class="md:w-1/3 px-3 mb-6 md:mb-0">
-                                            <mat-form-field class="w-full">
-                                                <mat-label>ยอดที่ปั้มได้</mat-label>
-                                                <input matInput [placeholder]="'ยอดที่ปั้มได้'"
-                                                    formControlName="yod_pum_dai">
-                                            </mat-form-field>
-                                        </div>
-                                    </div>
-                                    <div class="-mx-3 md:flex mb-6">
-                                        <div class="md:w-1/3 px-3 mb-6 md:mb-0">
-                                            <mat-form-field class="w-full">
-                                                <mat-label>ยอดที่นับได้</mat-label>
-                                                <input matInput [placeholder]="'ยอดที่นับถือ'"
-                                                    formControlName="yod_nub_dai">
-                                            </mat-form-field>
-                                        </div>
-                                    </div>
-                                    <div class="-mx-3 md:flex mb-6">
-                                        <div class="md:w-1/3 px-3 mb-6 md:mb-0">
-                                            <mat-form-field class="w-full">
-                                                <mat-label>ชื่อคนที่ดูแล</mat-label>
-                                                <input matInput [placeholder]="'ชื่อคนที่ดูแล'" formControlName="owner">
-                                            </mat-form-field>
-                                        </div>
-                                    </div>
-                                    <div class="flex items-center justify-end w-full border-t px-8 py-4">
-                                        <div class="flex items-center justify-end">
-                                            <a class="ml-4" mat-flat-button routerLink="/product/list">
-                                                <mat-icon svgIcon="heroicons_solid:x"></mat-icon>
-                                                ยกเลิก
-                                            </a>
-                                            <button class="px-6 ml-3 mat-primary" mat-flat-button (click)="updateformDataCleanIron()">
-                                                <mat-icon svgIcon="heroicons_solid:check"></mat-icon>
-                                                ยืนยัน
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                </ng-template>
-            </mat-tab>
-            <mat-tab label="แผนกอัดชิ้นงาน">
-                <ng-template matTabContent>
-                    <form [formGroup]="formDataCompression">
-                        <div class="flex-auto p-6 sm:p-10">
-                            <div class="grid gap-4 sm:grid-cols-1 w-full md:grid-cols-1">
-                                <div
-                                    class="bg-card rounded-xl md:shadow overflow-hidden px-8 pt-6 pb-8 mb-4 flex flex-col my-2">
-                                    <div class="-mx-3 md:flex mb-6">
-                                        <div class="md:w-full px-3 mb-6 md:mb-0">
-                                            <mat-form-field class="w-full">
-                                                <mat-label>เครื่องมือที่ใช้</mat-label>
-                                                <input matInput [placeholder]="'เครื่องมือที่ใช้'"
-                                                    formControlName="machine">
-                                            </mat-form-field>
-                                        </div>
-                                    </div>
-                                    <div class="-mx-3 md:flex mb-6">
-                                        <div class="md:w-1/2 px-3 mb-6 md:mb-0">
-                                            <mat-form-field class="w-full">
-                                                <mat-label>ยางที่ใช้ 1</mat-label>
-                                                <input matInput [placeholder]="'ยางที่ใช้'" formControlName="yang_1">
-                                            </mat-form-field>
-                                        </div>
-                                        <div class="md:w-1/2 px-3 mb-6 md:mb-0">
-                                            <mat-form-field class="w-full">
-                                                <mat-label>ยางที่ใช้ 2</mat-label>
-                                                <input matInput [placeholder]="'ยางที่ใช้'" formControlName="yang_2">
-                                            </mat-form-field>
-                                        </div>
-                                    </div>
-                                    <div class="-mx-3 md:flex mb-6">
-                                        <div class="md:w-1/2 px-3 mb-6 md:mb-0">
-                                            <mat-form-field class="w-full">
-                                                <mat-label>ความร้อนที่ใช้ 1</mat-label>
-                                                <input matInput [placeholder]="'ความร้อนที่ใช้'"
-                                                    formControlName="hot_1">
-                                            </mat-form-field>
-                                        </div>
-                                        <div class="md:w-1/2 px-3 mb-6 md:mb-0">
-                                            <mat-form-field class="w-full">
-                                                <mat-label>ความร้อนที่ใช้ 2</mat-label>
-                                                <input matInput [placeholder]="'ความร้อนที่ใช้'"
-                                                    formControlName="hot_2">
-                                            </mat-form-field>
-                                        </div>
-                                    </div>
-                                    <div class="-mx-3 md:flex mb-6">
-                                        <div class="md:w-1/3 px-3 mb-6 md:mb-0">
-                                            <mat-form-field class="w-full">
-                                                <mat-label>เวลาที่ใช้</mat-label>
-                                                <input matInput [placeholder]="'เวลาที่ใช้'" formControlName="time">
-                                            </mat-form-field>
-                                        </div>
-                                        <div class="md:w-1/3 px-3 mb-6 md:mb-0">
-                                            <mat-form-field class="w-full">
-                                                <mat-label>จำนวนที่เครื่องย้ำ</mat-label>
-                                                <input matInput [placeholder]="'จำนวนที่เครื่องย้ำ'"
-                                                    formControlName="qty">
-                                            </mat-form-field>
-                                        </div>
-                                        <div class="md:w-1/3 px-3 mb-6 md:mb-0">
-                                            <mat-form-field class="w-full">
-                                                <mat-label>น้ำหนักยางที่ใช้</mat-label>
-                                                <input matInput [placeholder]="'น้ำหนักยางที่ใช้'"
-                                                    formControlName="weight">
-                                            </mat-form-field>
-                                        </div>
-                                    </div>
-                                    <div class="-mx-3 md:flex mb-6">
-                                        <div class="md:w-1/12 px-3 mb-6 md:mb-0">
-                                            <mat-form-field class="w-full">
-                                                <mat-label>วางสี่เหลี่ยม</mat-label>
-                                                <input matInput [placeholder]="'วางสี่เหลี่ยม'"
-                                                    formControlName="wang_son_1">
-                                            </mat-form-field>
-                                        </div>
-                                        <div class="md:w-1/12 px-3 mb-6 md:mb-0">
-                                            <mat-form-field class="w-full">
-                                                <mat-label>วางบวก</mat-label>
-                                                <input matInput [placeholder]="'วางบวก'" formControlName="wang_yang_2">
-                                            </mat-form-field>
-                                        </div>
-                                        <div class="md:w-1/12 px-3 mb-6 md:mb-0">
-                                            <mat-form-field class="w-full">
-                                                <mat-label>วางขนาน</mat-label>
-                                                <input matInput [placeholder]="'วางขนาน'" formControlName="wang_yang_3">
-                                            </mat-form-field>
-                                        </div>
-                                        <div class="md:w-1/12 px-3 mb-6 md:mb-0">
-                                            <mat-form-field class="w-full">
-                                                <mat-label>ใส่ไส้</mat-label>
-                                                <input matInput [placeholder]="'ใส่ไส้'" formControlName="wang_yang_4">
-                                            </mat-form-field>
-                                        </div>
-                                        <div class="md:w-1/12 px-3 mb-6 md:mb-0">
-                                            <mat-form-field class="w-full">
-                                                <mat-label>เส้นพันแกน</mat-label>
-                                                <input matInput [placeholder]="'เส้นพันแกน'"
-                                                    formControlName="wang_yang_5">
-                                            </mat-form-field>
-                                        </div>
-                                        <div class="md:w-1/12 px-3 mb-6 md:mb-0">
-                                            <mat-form-field class="w-full">
-                                                <mat-label>วางเหล็ก</mat-label>
-                                                <input matInput [placeholder]="'วางเหล็ก'"
-                                                    formControlName="wang_yang_6">
-                                            </mat-form-field>
-                                        </div>
-                                        <div class="md:w-1/12 px-3 mb-6 md:mb-0">
-                                            <mat-form-field class="w-full">
-                                                <mat-label>วางเส้นยาว</mat-label>
-                                                <input matInput [placeholder]="'วางเส้นยาว'"
-                                                    formControlName="wang_yang_7">
-                                            </mat-form-field>
-                                        </div>
-                                        <div class="md:w-1/12 px-3 mb-6 md:mb-0">
-                                            <mat-form-field class="w-full">
-                                                <mat-label>วางวงกลม</mat-label>
-                                                <input matInput [placeholder]="'วางวงกลม'"
-                                                    formControlName="wang_yang_8">
-                                            </mat-form-field>
-                                        </div>
-                                        <div class="md:w-1/12 px-3 mb-6 md:mb-0">
-                                            <mat-form-field class="w-full">
-                                                <mat-label>หยอดกลาง</mat-label>
-                                                <input matInput [placeholder]="'หยอดกลาง'"
-                                                    formControlName="wang_yang_9">
-                                            </mat-form-field>
-                                        </div>
-                                        <div class="md:w-1/12 px-3 mb-6 md:mb-0">
-                                            <mat-form-field class="w-full">
-                                                <mat-label>วางดอกจัน</mat-label>
-                                                <input matInput [placeholder]="'วางดอกจัน'"
-                                                    formControlName="wang_yang_10">
-                                            </mat-form-field>
-                                        </div>
-                                    </div>
-                                    <div class="-mx-3 md:flex mb-6">
-                                        <div class="md:w-1/12 px-3 mb-6 md:mb-0">
-                                            <mat-form-field class="w-full">
-                                                <mat-label>วางซ้อน 1</mat-label>
-                                                <input matInput [placeholder]="'วางซ้อน 1'"
-                                                    formControlName="wang_son_1">
-                                            </mat-form-field>
-                                        </div>
-                                        <div class="md:w-1/12 px-3 mb-6 md:mb-0">
-                                            <mat-form-field class="w-full">
-                                                <mat-label>วางซ้อน 2</mat-label>
-                                                <input matInput [placeholder]="'วางซ้อน 2'" formControlName="wang_son_2">
-                                            </mat-form-field>
-                                        </div>
-                                        <div class="md:w-1/12 px-3 mb-6 md:mb-0">
-                                            <mat-form-field class="w-full">
-                                                <mat-label>วางซ้อน 3</mat-label>
-                                                <input matInput [placeholder]="'วางซ้อน 3'" formControlName="wang_son_3">
-                                            </mat-form-field>
-                                        </div>
-                                        <div class="md:w-1/12 px-3 mb-6 md:mb-0">
-                                            <mat-form-field class="w-full">
-                                                <mat-label>วางซ้อน 4</mat-label>
-                                                <input matInput [placeholder]="'วางซ้อน 4'" formControlName="wang_son_4">
-                                            </mat-form-field>
-                                        </div>
-                                        <div class="md:w-1/12 px-3 mb-6 md:mb-0">
-                                            <mat-form-field class="w-full">
-                                                <mat-label>วางซ้อน 5</mat-label>
-                                                <input matInput [placeholder]="'วางซ้อน 5'"
-                                                    formControlName="wang_son_5">
-                                            </mat-form-field>
-                                        </div>
-                                        <div class="md:w-1/12 px-3 mb-6 md:mb-0">
-                                            <mat-form-field class="w-full">
-                                                <mat-label>วางซ้อน 6</mat-label>
-                                                <input matInput [placeholder]="'วางซ้อน 6'"
-                                                    formControlName="wang_son_6">
-                                            </mat-form-field>
-                                        </div>
-                                        <div class="md:w-1/12 px-3 mb-6 md:mb-0">
-                                            <mat-form-field class="w-full">
-                                                <mat-label>วางซ้อน 7</mat-label>
-                                                <input matInput [placeholder]="'วางซ้อน 7'"
-                                                    formControlName="wang_son_7">
-                                            </mat-form-field>
-                                        </div>
-                                        <div class="md:w-1/12 px-3 mb-6 md:mb-0">
-                                            <mat-form-field class="w-full">
-                                                <mat-label>วางซ้อน 8</mat-label>
-                                                <input matInput [placeholder]="'วางซ้อน 8'"
-                                                    formControlName="wang_son_8">
-                                            </mat-form-field>
-                                        </div>
-                                        <div class="md:w-1/12 px-3 mb-6 md:mb-0">
-                                            <mat-form-field class="w-full">
-                                                <mat-label>วางซ้อน 9</mat-label>
-                                                <input matInput [placeholder]="'วางซ้อน 9'"
-                                                    formControlName="wang_son_9">
-                                            </mat-form-field>
-                                        </div>
-                                        <div class="md:w-1/12 px-3 mb-6 md:mb-0">
-                                            <mat-form-field class="w-full">
-                                                <mat-label>วางซ้อน 10</mat-label>
-                                                <input matInput [placeholder]="'วางซ้อน 10'"
-                                                    formControlName="wang_son_10">
-                                            </mat-form-field>
-                                        </div>
-                                    </div>
-                                    <div class="flex items-center justify-end w-full border-t px-8 py-4">
-                                        <div class="flex items-center justify-end">
-                                            <a class="ml-4" mat-flat-button routerLink="/product/list">
-                                                <mat-icon svgIcon="heroicons_solid:x"></mat-icon>
-                                                ยกเลิก
-                                            </a>
-                                            <button class="px-6 ml-3 mat-primary" mat-flat-button (click)="updateformAudItem()">
-                                                <mat-icon svgIcon="heroicons_solid:check"></mat-icon>
-                                                ยืนยัน
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
                 </ng-template>
             </mat-tab>
         </mat-tab-group>

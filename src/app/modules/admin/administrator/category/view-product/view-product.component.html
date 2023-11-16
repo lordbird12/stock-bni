@@ -1,0 +1,44 @@
+<div class="flex flex-col flex-auto min-w-0 bg-card dark:bg-transparent ">
+    <!-- Header -->
+    <!-- Main -->
+    <div class="flex-auto p-3 sm:p-10">
+        <table class="w-full text-m text-left text-gray-500 dark:text-gray-400">
+            <thead
+                class="text-lx text-center text-white uppercase bg-gray-500 dark:bg-gray-700 dark:text-gray-400 h-10">
+                <tr>
+
+                    <th class="w-20">ลำดับ</th>
+                    <th class="w-20">Client Code</th>
+                    <th class="w-20">Code</th>
+                    <th class="w-20">ชื่อ</th>
+                    <th class="w-20">รายละเอียด</th>
+                    <th class="w-20">จำนวน</th>
+                    <th class="w-20">สถานะ</th>
+
+                </tr>
+            </thead>
+            <ng-container *ngFor="let item of dataRow; let i = index">
+                <tbody *ngIf="dataRow?.length != 0">
+                    <tr class="text-center " >
+
+                        <td >
+                            {{i + 1}}
+                        </td>
+                        <td >{{item?.client_code }}</td>
+                        <td>{{ item?.code }}</td>
+                        <td>{{ item?.name }}</td>
+                        <td>
+                            {{ item?.detail}}
+                        </td>
+                        <td>
+                            {{ item?.qty}}
+                        </td>
+                        <td>
+                            {{ item?.status}}
+                        </td>
+                    </tr>
+                </tbody>
+            </ng-container>
+        </table>
+    </div>
+</div>

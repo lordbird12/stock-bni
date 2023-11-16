@@ -1,0 +1,71 @@
+<div class="flex flex-col flex-auto min-w-0 bg-card dark:bg-transparent overflow-y-auto max-h-180">
+    <!-- Header -->
+    <div
+        class="flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between sm:py-5 px-3 border-b bg-card dark:bg-transparent">
+        <div class="flex-1 min-w-0">
+            <!-- Title -->
+            <div class="mt-2">
+                <button class="px-6 mat-primary" mat-flat-button (click)="addNumber()">
+                    <mat-icon svgIcon="heroicons_solid:check"></mat-icon>
+                    เพิ่มช่อง
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- Main -->
+    <div class="flex-auto p-3 w-full">
+        <form class="flex flex-col pb-4 ng-valid" [formGroup]="formData">
+            <div class="flex-auto" formArrayName="number">
+                <table class="w-full text-m text-left text-gray-500 dark:text-gray-400">
+                    <thead
+                        class="text-lx text-center text-white uppercase bg-gray-500 dark:bg-gray-700 dark:text-gray-400 h-10">
+                        <tr>
+                            <th class="w-20">ลำดับ</th>
+                            <th class="w-50">ชื่อช่อง</th>
+                            <th class="w-50">รายละเอียด</th>
+                            <th class="w-20">จัดการ</th>
+                        </tr>
+                    </thead>
+                    <ng-container *ngFor="depo; of: number().controls; let i = index" [formGroupName]="i">
+                        <tbody>
+                            <tr class="text-center items-start">
+                                <td>{{i + 1}} </td>
+                                <td >
+                                    <div class="w-full m-2 items-center">
+                                        <mat-form-field>
+                                            <input matInput [formControlName]="'name'">
+                                        </mat-form-field>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="w-full m-2 items-center">
+                                        <mat-form-field >
+                                            <input matInput [formControlName]="'detail'">
+                                        </mat-form-field>
+                                    </div>
+                                </td>
+                                <td>
+                                    <button mat-button (click)="removeNumber(i)">
+                                        <mat-icon>delete</mat-icon>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </ng-container>
+                </table>
+            </div>
+        </form>
+        <div class="flex items-center justify-end w-full border-t px-8 py-4">
+            <div class="flex items-center justify-end">
+                <a class="ml-4" mat-flat-button (click)="onClose()">
+                    <mat-icon svgIcon="heroicons_solid:x"></mat-icon>
+                    ยกเลิก
+                </a>
+                <button class="px-6 ml-3 mat-primary" mat-flat-button (click)="new()">
+                    <mat-icon svgIcon="heroicons_solid:check"></mat-icon>
+                    ยืนยัน
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

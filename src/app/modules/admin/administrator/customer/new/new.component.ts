@@ -78,7 +78,6 @@ export class NewComponent implements OnInit, AfterViewInit, OnDestroy {
 
     itemMaxData: any = [];
     blogData: any = [];
-    customerData: any = [];
     shelfData: any = [];
     shelfId: any;
     floorData: any = [];
@@ -100,9 +99,7 @@ export class NewComponent implements OnInit, AfterViewInit, OnDestroy {
         private _fuseConfirmationService: FuseConfirmationService,
         private _formBuilder: FormBuilder,
         private _Service: Service,
-        private _router: Router) {
-            this.GetCustomer();
-        }
+        private _router: Router) { }
 
     // -----------------------------------------------------------------------------------------------------
     // @ Lifecycle hooks
@@ -113,23 +110,12 @@ export class NewComponent implements OnInit, AfterViewInit, OnDestroy {
      */
     async ngOnInit(): Promise<void> {
         this.formData = this._formBuilder.group({
-            category_product_id: '',
             name: '',
-            detail: '',
-            qty: '',
-            shelve_id: '',
-            floor_id: '',
-            channel_id: '',
-            year: '',
-            images: [],
             code: '',
-            client_code: '',
-            client_name: '',
-            phone: '',
             email: '',
-            address: '',
+            phone: '',
             tax: '',
-            hold: '',
+            address: '',
         });
         this.GetCate();
         this.GetShelf();
@@ -148,24 +134,6 @@ export class NewComponent implements OnInit, AfterViewInit, OnDestroy {
         this._Service.getCategoryProduct().subscribe((resp) => {
             this.blogData = resp.data;
         });
-    }
-
-    GetCustomer(): void {
-        this._Service.getCustomer().subscribe((resp) => {
-            this.customerData = resp.data;
-        });
-    }
-
-    onChangeCustomer(event: any) {
-        let value = this.customerData.filter(item => item.id === event)
-        console.log(value[0].code)
-        this.formData.patchValue({
-            code : value[0].code,
-            name : value[0].name,
-            phone : value[0].phone,
-            email : value[0].email,
-            address : value[0].address,
-        })
     }
 
     GetShelf(): void {
@@ -256,25 +224,12 @@ export class NewComponent implements OnInit, AfterViewInit, OnDestroy {
             // If the confirm button pressed...
             if (result === 'confirmed') {
                 let formValue = this.formData.value;
-                const formData = new FormData();
 
-                Object.entries(formValue).forEach(([key, value]: any[]) => {
-                    if (key != 'images') {
-                        formData.append(key, value);
-                    }
-                });
-                for (var i = 0; i < this.files.length; i++) {
-                    formData.append('images[]', this.files[i]);
-                }
 
-                for (var i = 0; i < this.files2.length; i++) {
-                    formData.append('images[]', this.files2[i]);
-                }
-
-                this._Service.create(formData).subscribe({
+                this._Service.create(formValue).subscribe({
                     next: () => {
                         this._router
-                            .navigateByUrl('product/list')
+                            .navigateByUrl('customer/list')
                             .then(() => { });
                     },
                     error: (err: any) => {

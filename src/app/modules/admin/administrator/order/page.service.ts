@@ -76,7 +76,7 @@ export class Service {
     /**
      * Constructor
      */
-    constructor(private _httpClient: HttpClient) {}
+    constructor(private _httpClient: HttpClient) { }
 
     httpOptionsFormdata = {
         headers: new HttpHeaders({ Authorization: `Bearer ${token}` }),
@@ -208,7 +208,6 @@ export class Service {
                             'Could not found chat with id of ' + id + '!'
                         );
                     }
-
                     return of(chat);
                 })
             );
@@ -640,8 +639,8 @@ export class Service {
         return this._httpClient
             .get<any[]>(
                 environment.API_URL +
-                    'api/brief-osm-comment-by-brief-osm/' +
-                    assetId,
+                'api/brief-osm-comment-by-brief-osm/' +
+                assetId,
                 this.httpOptionsFormdata
             )
             .pipe(
@@ -665,9 +664,9 @@ export class Service {
         return this._httpClient
             .post(
                 environment.API_URL +
-                    'api/briefs/' +
-                    briefId +
-                    '/approve_asset',
+                'api/briefs/' +
+                briefId +
+                '/approve_asset',
                 data,
                 this.httpOptionsFormdata
             )
@@ -683,9 +682,9 @@ export class Service {
         return this._httpClient
             .post(
                 environment.API_URL +
-                    'api/briefs/' +
-                    briefId +
-                    '/approve_asset_all',
+                'api/briefs/' +
+                briefId +
+                '/approve_asset_all',
                 data,
                 this.httpOptionsFormdata
             )
@@ -701,9 +700,9 @@ export class Service {
         return this._httpClient
             .post(
                 environment.API_URL +
-                    'api/briefs-osm-store-file/' +
-                    briefId +
-                    '/approve',
+                'api/briefs-osm-store-file/' +
+                briefId +
+                '/approve',
                 data,
                 this.httpOptionsFormdata
             )
@@ -719,9 +718,9 @@ export class Service {
         return this._httpClient
             .post(
                 environment.API_URL +
-                    'api/brief-osm-store/' +
-                    briefId +
-                    '/lanlord-confirm',
+                'api/brief-osm-store/' +
+                briefId +
+                '/lanlord-confirm',
                 data,
                 this.httpOptionsFormdata
             )
@@ -939,9 +938,9 @@ export class Service {
         return this._httpClient
             .put(
                 environment.API_URL +
-                    'api/briefs-osm/' +
-                    osm +
-                    '/update?populate[0]=brief_osm_stores.store&populate[1]=artwork_supplier_id&populate[2]=production_supplier_id&populate[3]=brief_files',
+                'api/briefs-osm/' +
+                osm +
+                '/update?populate[0]=brief_osm_stores.store&populate[1]=artwork_supplier_id&populate[2]=production_supplier_id&populate[3]=brief_files',
                 brief,
                 this.httpOptionsFormdata
             )
@@ -981,7 +980,7 @@ export class Service {
         return this._httpClient
             .get<Store[]>(
                 environment.API_URL +
-                    'api/store_list?pagination[page]=1&pagination[pageSize]=9999&sort[0]=store_type.id'
+                'api/store_list?pagination[page]=1&pagination[pageSize]=9999&sort[0]=store_type.id'
             )
             .pipe(
                 tap((stores) => {
@@ -1007,9 +1006,9 @@ export class Service {
                 this._httpClient
                     .post<any>(
                         environment.API_URL +
-                            'api/briefs/' +
-                            briefId +
-                            '/upload_artworks',
+                        'api/briefs/' +
+                        briefId +
+                        '/upload_artworks',
                         artwork,
                         this.httpOptionsFormdata
                     )
@@ -1040,11 +1039,11 @@ export class Service {
         return this._httpClient
             .get<AssetItem>(
                 environment.API_URL +
-                    'api/items?filters[season][$eq]=' +
-                    req.season +
-                    '&filters[division][$eq]=' +
-                    req.division +
-                    '&pagination[limit]=1',
+                'api/items?filters[season][$eq]=' +
+                req.season +
+                '&filters[division][$eq]=' +
+                req.division +
+                '&pagination[limit]=1',
                 this.httpOptionsFormdata
             )
             .pipe(
@@ -1068,7 +1067,7 @@ export class Service {
         return this._httpClient
             .get<AssetCategory[]>(
                 environment.API_URL +
-                    'api/asset-categories?populate=*&pagination[withCount]=false',
+                'api/asset-categories?populate=*&pagination[withCount]=false',
                 this.httpOptionsFormdata
             )
             .pipe();
@@ -1084,9 +1083,9 @@ export class Service {
     }
 
     // * create position
-    create(data: any): Observable<any> {
+    create(data: FormData): Observable<any> {
         return this._httpClient
-            .post(environment.API_URL + '/api/product', data, {
+            .post(environment.API_URL + '/api/order', data, {
                 headers: this.httpOptionsFormdata.headers,
             })
             .pipe(
@@ -1139,6 +1138,24 @@ export class Service {
                 })
             );
     }
+    getUser(): Observable<any> {
+        return this._httpClient
+            .get<any>(environment.API_URL + '/api/get_user')
+            .pipe(
+                tap((meterial) => {
+                    this._materials.next(meterial);
+                })
+            );
+    }
+    getProduct(): Observable<any> {
+        return this._httpClient
+            .get<any>(environment.API_URL + '/api/get_product')
+            .pipe(
+                tap((meterial) => {
+                    this._materials.next(meterial);
+                })
+            );
+    }
     getShelf(): Observable<any> {
         return this._httpClient
             .get<any>(environment.API_URL + '/api/get_shelf')
@@ -1148,7 +1165,7 @@ export class Service {
                 })
             );
     }
-    getFloor(s_id:any): Observable<any> {
+    getFloor(s_id: any): Observable<any> {
         return this._httpClient
             .get<any>(environment.API_URL + '/api/get_floor/' + s_id)
             .pipe(
@@ -1157,9 +1174,9 @@ export class Service {
                 })
             );
     }
-    getChanel(s_id : any, f_id : any): Observable<any> {
+    getChanel(s_id: any, f_id: any): Observable<any> {
         return this._httpClient
-            .get<any>(environment.API_URL + '/api/get_channel/' + s_id + '/' + f_id )
+            .get<any>(environment.API_URL + '/api/get_channel/' + s_id + '/' + f_id)
             .pipe(
                 tap((meterial) => {
                     this._materials.next(meterial);
@@ -1211,7 +1228,7 @@ export class Service {
     //* get position by id
     getById(id: any): Observable<any[]> {
         return this._httpClient
-            .get<any[]>(environment.API_URL + '/api/product/' + id)
+            .get<any[]>(environment.API_URL + '/api/order/' + id)
             .pipe(
                 tap((meterial) => {
                     this._materials.next(meterial);
@@ -1223,7 +1240,7 @@ export class Service {
     update(data: FormData): Observable<any> {
         return this._httpClient
             .post(
-                environment.API_URL + '/api/update_product',
+                environment.API_URL + '/api/update_order',
                 data,
                 this.httpOptionsFormdata
             )
@@ -1274,7 +1291,19 @@ export class Service {
                 })
             );
     }
-
+    updateSave(data: any): Observable<any> {
+        return this._httpClient
+            .post(
+                environment.API_URL + '/api/complete_print',
+                data,
+            )
+            .pipe(
+                switchMap((response: any) => {
+                    // Return a new observable with the response
+                    return of(response);
+                })
+            );
+    }
 
     delete(id: any): Observable<any> {
         return this._httpClient.delete<any>(
@@ -1286,7 +1315,7 @@ export class Service {
     getPage(dataTablesParameters: any): Observable<DataTablesResponse> {
         return this._httpClient
             .post(
-                environment.API_URL + '/api/product_page',
+                environment.API_URL + '/api/order_page',
                 dataTablesParameters,
                 this.httpOptionsFormdata
             )

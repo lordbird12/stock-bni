@@ -116,7 +116,45 @@ export const appRoutes: Route[] = [
                         (m) => m.Module
                     ),
             },
-
+            {
+                path: 'product-category',
+                canActivate: [],
+                children: [
+                    {
+                        path: '',
+                        loadChildren: () =>
+                            import(
+                                'app/modules/admin/administrator/category/page.module'
+                            ).then((m) => m.Module),
+                    },
+                ],
+            },
+            {
+                path: 'customer',
+                canActivate: [],
+                children: [
+                    {
+                        path: '',
+                        loadChildren: () =>
+                            import(
+                                'app/modules/admin/administrator/customer/page.module'
+                            ).then((m) => m.Module),
+                    },
+                ],
+            },
+            {
+                path: 'order',
+                canActivate: [],
+                children: [
+                    {
+                        path: '',
+                        loadChildren: () =>
+                            import(
+                                'app/modules/admin/administrator/order/page.module'
+                            ).then((m) => m.Module),
+                    },
+                ],
+            },
             {
                 path: 'product',
                 canActivate: [],
@@ -174,7 +212,7 @@ export const appRoutes: Route[] = [
                 ],
             },
 
-           
+
             // 404 & Catch all
             {
                 path: '404-not-found',

@@ -810,6 +810,47 @@ export class Service {
             )
         );
     }
+    getCodePage(dataTablesParameters: any): Observable<DataTablesResponse> {
+        return this._httpClient.post(environment.API_URL + '/api/floor_page', dataTablesParameters, this.httpOptionsFormdata).pipe(
+          switchMap((response: any) => {
+            return of(response.data);
+          })
+        );
+      }
+
+    createShelf(data: any): Observable<any> {
+        return this._httpClient
+            .post(
+                environment.API_URL + '/api/category_product',
+                data,
+                this.httpOptionsFormdata
+            )
+            .pipe(
+                switchMap((response: any) => {
+                    // Return a new observable with the response
+                    return of(response);
+                })
+            );
+    }
+    getCouponType(): Observable<any[]> {
+        return this._httpClient.post<any[]>(environment.API_URL + '/api/get_gift_voucher',{status:1},this.httpOptionsFormdata).pipe(
+          tap((meterial) => {
+            this._materials.next(meterial);
+          })
+        );
+      }
+    deleteCoupon(id: any): Observable<any> {
+        return this._httpClient.delete<any>(
+            environment.API_URL + '/api/gift_voucher_code/' + id,
+            { headers: this.httpOptionsFormdata.headers }
+        );
+    }
+    // delete(id: any): Observable<any> {
+    //     return this._httpClient.delete<any>(
+    //         environment.API_URL + '/api/gift_voucher/' + id,
+    //         { headers: this.httpOptionsFormdata.headers }
+    //     );
+    // }
 
     commentOSM(data: any): Observable<any> {
         return this._httpClient
@@ -1083,23 +1124,134 @@ export class Service {
         return throwError(errorMessage);
     }
 
-    // * create position
-    create(data: any): Observable<any> {
+    getBriefs(
+        page: number = 0,
+        size: number = 10,
+        sort: string = 'id',
+        order: 'asc' | 'desc' | '' = 'asc',
+        search: string = '',
+        supplierId: string = ''
+    ): Observable<any> {
+        let searchParams: any = [];
+
+        searchParams = {
+            'pagination[page]': '' + page,
+            'pagination[pageSize]': '' + size,
+            fields: '*',
+            populate: '*',
+            'sort[0]': 'brief_date:desc',
+        };
+
+        if (sort != '' && sort != null) {
+            searchParams['sort[1]'] = `${sort}:${order}`;
+        }
+
+        if (supplierId != '') {
+            searchParams['filters[$or][0][translation_supplier_id]'] =
+                supplierId;
+            searchParams['filters[$or][1][artwork_supplier_id]'] = supplierId;
+            searchParams['filters[$or][2][production_supplier_id]'] =
+                supplierId;
+        }
+
+        if (search) {
+            searchParams['filters[order_name][$containsi]'] = search;
+        }
+
         return this._httpClient
-            .post(environment.API_URL + '/api/product', data, {
-                headers: this.httpOptionsFormdata.headers,
-            })
+            .get<{ meta: Pagination; data: PositionProduct[] }>(
+                environment.API_URL + 'api/briefs',
+                {
+                    params: searchParams,
+                    headers: new HttpHeaders({
+                        Authorization: `Bearer ${token}`,
+                    }),
+                }
+            )
             .pipe(
-                switchMap((response: any) => {
-                    // Return a new observable with the response
-                    return of(response);
+                tap((response) => {
+                    this._pagination.next({
+                        length: response.meta.pagination.total,
+                        size: response.meta.pagination.pageSize,
+                        page: response.meta.pagination.page - 1,
+                        lastPage: 0,
+                        startIndex: 0,
+                        endIndex: 0,
+                        pagination: {
+                            page: response.meta.pagination.page,
+                            pageCount: response.meta.pagination.pageCount,
+                            pageSize: response.meta.pagination.pageSize,
+                            total: response.meta.pagination.total,
+                        },
+                    });
+                    this._products.next(response.data);
                 })
             );
     }
 
-    create_review(data: any): Observable<any> {
+    /**
+     * Get Asset Type
+     */
+    getMaterial(): Observable<any[]> {
         return this._httpClient
-            .post(environment.API_URL + '/api/product', data, {
+            .get<any[]>(environment.API_URL + 'api/get_asset_material')
+            .pipe(
+                tap((meterial) => {
+                    this._materials.next(meterial);
+                })
+            );
+    }
+
+    getPrintingCost(req: any): Observable<any> {
+        console.log(req);
+        return this._httpClient
+            .post<any>(
+                environment.API_URL + 'api/get-printing-cost',
+                req,
+                this.httpOptionsFormdata
+            )
+            .pipe(
+                take(1),
+                map((products) => {
+                    return products.data;
+                }),
+                switchMap((product) => {
+                    if (!product) {
+                        return throwError('Could not found cost with id of !');
+                    }
+
+                    return of(product);
+                })
+            );
+    }
+
+    importOsm(data: any): Observable<any> {
+        return this._httpClient.post<any>(
+            environment.API_URL + 'api/import-osm',
+            data,
+            { headers: this.httpOptionsFormdata.headers }
+        );
+    }
+
+    setSchedule(data: any): Observable<any> {
+        return this._httpClient.post<any>(
+            environment.API_URL + 'api/set-job-schedule',
+            data,
+            { headers: this.httpOptionsFormdata.headers }
+        );
+    }
+
+    deleteOsm(id: string): Observable<any> {
+        return this._httpClient.delete<any>(
+            `${environment.API_URL}api/brief-osms/` + id,
+            { headers: this.httpOptionsFormdata.headers }
+        );
+    }
+
+    // * create position
+    create(data: any): Observable<any> {
+        return this._httpClient
+            .post(environment.API_URL + '/api/blog', data, {
                 headers: this.httpOptionsFormdata.headers,
             })
             .pipe(
@@ -1121,24 +1273,25 @@ export class Service {
             );
     }
 
-    getCategoryProduct(): Observable<any> {
+    getCategory(): Observable<any> {
+      return this._httpClient.get<any>(environment.API_URL + '/api/get_blog_category').pipe(
+        tap((data) => {
+          this._materials.next(data);
+        })
+      );
+    }
+
+    //* get position by id
+    getById(id: any): Observable<any[]> {
         return this._httpClient
-            .get<any>(environment.API_URL + '/api/get_category_product')
+            .get<any[]>(environment.API_URL + '/api/category_product/' + id)
             .pipe(
                 tap((meterial) => {
                     this._materials.next(meterial);
                 })
             );
     }
-    getCustomer(): Observable<any> {
-        return this._httpClient
-            .get<any>(environment.API_URL + '/api/get_client')
-            .pipe(
-                tap((meterial) => {
-                    this._materials.next(meterial);
-                })
-            );
-    }
+
     getShelf(): Observable<any> {
         return this._httpClient
             .get<any>(environment.API_URL + '/api/get_shelf')
@@ -1148,82 +1301,24 @@ export class Service {
                 })
             );
     }
-    getFloor(s_id:any): Observable<any> {
+
+    getChanel(id): Observable<any> {
         return this._httpClient
-            .get<any>(environment.API_URL + '/api/get_floor/' + s_id)
+            .get<any>(environment.API_URL + '/api/get_floor/'+ id)
             .pipe(
                 tap((meterial) => {
                     this._materials.next(meterial);
                 })
             );
     }
-    getChanel(s_id : any, f_id : any): Observable<any> {
-        return this._httpClient
-            .get<any>(environment.API_URL + '/api/get_channel/' + s_id + '/' + f_id )
-            .pipe(
-                tap((meterial) => {
-                    this._materials.next(meterial);
-                })
-            );
-    }
-    getCategory(): Observable<any> {
-        return this._httpClient
-            .get<any>(environment.API_URL + '/api/get_category_product')
-            .pipe(
-                tap((data) => {
-                    this._materials.next(data);
-                })
-            );
-    }
 
-    getCategory1(): Observable<any> {
-        return this._httpClient
-            .get<any>(environment.API_URL + '/api/get_category_product')
-            .pipe(
-                tap((data) => {
-                    this._materials.next(data);
-                })
-            );
-    }
 
-    getCategory3(): Observable<any> {
-        return this._httpClient
-            .get<any>(environment.API_URL + '/api/get_size')
-            .pipe(
-                tap((data) => {
-                    this._materials.next(data);
-                })
-            );
-    }
-
-    getCategory1ById(id: any): Observable<any> {
-        return this._httpClient
-            .get<any>(
-                environment.API_URL + '/api/main_category_product/' + id
-            )
-            .pipe(
-                tap((data) => {
-                    this._materials.next(data);
-                })
-            );
-    }
-
-    //* get position by id
-    getById(id: any): Observable<any[]> {
-        return this._httpClient
-            .get<any[]>(environment.API_URL + '/api/product/' + id)
-            .pipe(
-                tap((meterial) => {
-                    this._materials.next(meterial);
-                })
-            );
-    }
 
     //   * update branch
-    update(data: FormData): Observable<any> {
+    update(data: any, id): Observable<any> {
         return this._httpClient
-            .post(
-                environment.API_URL + '/api/update_product',
+            .put(
+                environment.API_URL + '/api/category_product/' + id ,
                 data,
                 this.httpOptionsFormdata
             )
@@ -1234,12 +1329,11 @@ export class Service {
                 })
             );
     }
-
-    updateIron(data: any): Observable<any> {
+    updateFloor(data: any, id: any): Observable<any> {
         return this._httpClient
-            .post(
-                environment.API_URL + '/api/iron',
-                data,
+            .put(
+                environment.API_URL + '/api/floor/' + id,
+                data
             )
             .pipe(
                 switchMap((response: any) => {
@@ -1248,24 +1342,11 @@ export class Service {
                 })
             );
     }
-    updateClearIron(data: any): Observable<any> {
+    updateChanel(data: any, id: any): Observable<any> {
         return this._httpClient
-            .post(
-                environment.API_URL + '/api/clear_iron',
-                data,
-            )
-            .pipe(
-                switchMap((response: any) => {
-                    // Return a new observable with the response
-                    return of(response);
-                })
-            );
-    }
-    updateAudItem(data: any): Observable<any> {
-        return this._httpClient
-            .post(
-                environment.API_URL + '/api/aud_item',
-                data,
+            .put(
+                environment.API_URL + '/api/chanel/' + id,
+                data
             )
             .pipe(
                 switchMap((response: any) => {
@@ -1275,10 +1356,36 @@ export class Service {
             );
     }
 
+    newFloor(data: any): Observable<any> {
+        return this._httpClient
+            .post(
+                environment.API_URL + '/api/floor',
+                data
+            )
+            .pipe(
+                switchMap((response: any) => {
+                    // Return a new observable with the response
+                    return of(response);
+                })
+            );
+    }
+    newChannel(data: any): Observable<any> {
+        return this._httpClient
+            .post(
+                environment.API_URL + '/api/channel',
+                data
+            )
+            .pipe(
+                switchMap((response: any) => {
+                    // Return a new observable with the response
+                    return of(response);
+                })
+            );
+    }
 
     delete(id: any): Observable<any> {
         return this._httpClient.delete<any>(
-            environment.API_URL + '/api/product/' + id,
+            environment.API_URL + '/api/blog/' + id,
             { headers: this.httpOptionsFormdata.headers }
         );
     }
@@ -1286,7 +1393,7 @@ export class Service {
     getPage(dataTablesParameters: any): Observable<DataTablesResponse> {
         return this._httpClient
             .post(
-                environment.API_URL + '/api/product_page',
+                environment.API_URL + '/api/category_product_page',
                 dataTablesParameters,
                 this.httpOptionsFormdata
             )
@@ -1295,5 +1402,22 @@ export class Service {
                     return of(response.data);
                 })
             );
+    }
+    getPageFloor(dataTablesParameters: any): Observable<DataTablesResponse> {
+        return this._httpClient
+            .post(
+                environment.API_URL + '/api/floor_page',
+                dataTablesParameters,
+                this.httpOptionsFormdata
+            )
+            .pipe(
+                switchMap((response: any) => {
+                    return of(response.data);
+                })
+            );
+    }
+
+    getAll(): Observable<any> {
+        return this._httpClient.get<any>(environment.API_URL + '/api/get_shelf');
     }
 }

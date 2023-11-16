@@ -1086,7 +1086,7 @@ export class Service {
     // * create position
     create(data: any): Observable<any> {
         return this._httpClient
-            .post(environment.API_URL + '/api/product', data, {
+            .post(environment.API_URL + '/api/client', data, {
                 headers: this.httpOptionsFormdata.headers,
             })
             .pipe(
@@ -1124,15 +1124,6 @@ export class Service {
     getCategoryProduct(): Observable<any> {
         return this._httpClient
             .get<any>(environment.API_URL + '/api/get_category_product')
-            .pipe(
-                tap((meterial) => {
-                    this._materials.next(meterial);
-                })
-            );
-    }
-    getCustomer(): Observable<any> {
-        return this._httpClient
-            .get<any>(environment.API_URL + '/api/get_client')
             .pipe(
                 tap((meterial) => {
                     this._materials.next(meterial);
@@ -1211,7 +1202,7 @@ export class Service {
     //* get position by id
     getById(id: any): Observable<any[]> {
         return this._httpClient
-            .get<any[]>(environment.API_URL + '/api/product/' + id)
+            .get<any[]>(environment.API_URL + '/api/client/' + id)
             .pipe(
                 tap((meterial) => {
                     this._materials.next(meterial);
@@ -1220,10 +1211,10 @@ export class Service {
     }
 
     //   * update branch
-    update(data: FormData): Observable<any> {
+    update(data: any,id: any): Observable<any> {
         return this._httpClient
             .post(
-                environment.API_URL + '/api/update_product',
+                environment.API_URL + '/api/client/ + id',
                 data,
                 this.httpOptionsFormdata
             )
@@ -1286,7 +1277,7 @@ export class Service {
     getPage(dataTablesParameters: any): Observable<DataTablesResponse> {
         return this._httpClient
             .post(
-                environment.API_URL + '/api/product_page',
+                environment.API_URL + '/api/client_page',
                 dataTablesParameters,
                 this.httpOptionsFormdata
             )

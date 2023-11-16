@@ -78,12 +78,13 @@ export class NewComponent implements OnInit, AfterViewInit, OnDestroy {
 
     itemMaxData: any = [];
     blogData: any = [];
-    customerData: any = [];
     shelfData: any = [];
     shelfId: any;
     floorData: any = [];
     chanelData: any = [];
-
+    userData: any = [];
+    customerData: any = [];
+    productData: any[] = [];
     // me: any | null;
     // get roleType(): string {
     //     return 'marketing';
@@ -102,6 +103,8 @@ export class NewComponent implements OnInit, AfterViewInit, OnDestroy {
         private _Service: Service,
         private _router: Router) {
             this.GetCustomer();
+            this.GetProduct();
+            this.GetUser();
         }
 
     // -----------------------------------------------------------------------------------------------------
@@ -113,23 +116,13 @@ export class NewComponent implements OnInit, AfterViewInit, OnDestroy {
      */
     async ngOnInit(): Promise<void> {
         this.formData = this._formBuilder.group({
-            category_product_id: '',
-            name: '',
-            detail: '',
-            qty: '',
-            shelve_id: '',
-            floor_id: '',
-            channel_id: '',
+            product_id: '',
+            client_id: '',
+            user_id: '',
             year: '',
+            remark: '',
             images: [],
-            code: '',
-            client_code: '',
-            client_name: '',
-            phone: '',
-            email: '',
-            address: '',
-            tax: '',
-            hold: '',
+
         });
         this.GetCate();
         this.GetShelf();
@@ -153,6 +146,17 @@ export class NewComponent implements OnInit, AfterViewInit, OnDestroy {
     GetCustomer(): void {
         this._Service.getCustomer().subscribe((resp) => {
             this.customerData = resp.data;
+        });
+    }
+    GetUser(): void {
+        this._Service.getUser().subscribe((resp) => {
+            this.userData = resp.data;
+        });
+    }
+
+    GetProduct(): void {
+        this._Service.getProduct().subscribe((resp) => {
+            this.productData = resp.data;
         });
     }
 
@@ -272,9 +276,9 @@ export class NewComponent implements OnInit, AfterViewInit, OnDestroy {
                 }
 
                 this._Service.create(formData).subscribe({
-                    next: () => {
+                    next: (resp) => {
                         this._router
-                            .navigateByUrl('product/list')
+                            .navigateByUrl('order/edit/' +  resp.data.id)
                             .then(() => { });
                     },
                     error: (err: any) => {

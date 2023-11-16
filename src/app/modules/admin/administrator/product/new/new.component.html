@@ -6,13 +6,11 @@
             <!-- Title -->
             <div class="mt-2">
                 <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
-                    <<<<<<< HEAD เพิ่มแม่พิมพ์=======ส ร้างแม่พิมพ์>>>>>>> b48ac7b6594cbb4f3221683766b2b45576342289
+                    เพิ่มแม่พิมพ์
                 </h2>
             </div>
-
         </div>
     </div>
-
     <!-- Main -->
     <!-- Main -->
     <div class="flex-auto p-3 sm:p-10">
@@ -85,12 +83,6 @@
                             </div>
                             <div class="md:w-1/3 px-3 mb-6 md:mb-0">
                                 <mat-form-field class="w-full">
-                                    <mat-label>รหัสลูกค้า</mat-label>
-                                    <input matInput [placeholder]="'รหัสลูกค้า'" formControlName="client_code">
-                                </mat-form-field>
-                            </div>
-                            <div class="md:w-1/3 px-3 mb-6 md:mb-0">
-                                <mat-form-field class="w-full">
                                     <mat-label>จำนวน</mat-label>
                                     <input matInput [placeholder]="'จำนวน'" formControlName="qty">
                                 </mat-form-field>
@@ -101,6 +93,48 @@
                                 <mat-form-field class="w-full">
                                     <mat-label>รายละเอียด</mat-label>
                                     <textarea matInput [placeholder]="'กรอกรายละเอียดเพิ่มเติม'" [rows]="5" formControlName="detail"></textarea>
+                                </mat-form-field>
+                            </div>
+                        </div>
+                        <div class="-mx-3 md:flex mb-6">
+                            <div class="md:w-1/4 px-3 mb-6 md:mb-0">
+                                <mat-form-field class="w-full">
+                                    <mat-label>รหัสลูกค้า</mat-label>
+                                    <input matInput [placeholder]="'รหัสลูกค้า'" formControlName="code">
+                                </mat-form-field>
+                            </div>
+                            <div class="md:w-1/4 px-3 mb-6 md:mb-0">
+                                <mat-form-field class="w-full">
+                                    <mat-label>ชื่อลูกค้า</mat-label>
+                                    <input matInput [placeholder]="'ชื่อลูกค้า'" formControlName="name">
+                                </mat-form-field>
+                            </div>
+                            <div class="md:w-1/4 px-3 mb-6 md:mb-0">
+                                <mat-form-field class="w-full">
+                                    <mat-label>เบอร์ติดต่อ</mat-label>
+                                    <input matInput [placeholder]="'เบอร์ติดต่อ'" formControlName="phone">
+                                </mat-form-field>
+                            </div>
+                            <div class="md:w-1/4 px-3 mb-6 md:mb-0">
+                                <mat-form-field class="w-full">
+                                    <mat-label>อีเมล</mat-label>
+                                    <input matInput [placeholder]="'อีเมล'" formControlName="email">
+                                </mat-form-field>
+                            </div>
+                        </div>
+                        <div class="-mx-3 md:flex mb-6">
+                            <div class="md:w-full px-3 mb-6 md:mb-0">
+                                <mat-form-field class="w-full">
+                                    <mat-label>เลขประจำตัวผู้เสียภาษี</mat-label>
+                                    <input matInput [placeholder]="'เลขประจำตัวผู้เสียภาษี'" formControlName="tax">
+                                </mat-form-field>
+                            </div>
+                        </div>
+                        <div class="-mx-3 md:flex mb-6">
+                            <div class="md:w-full px-3 mb-6 md:mb-0">
+                                <mat-form-field class="w-full">
+                                    <mat-label>ที่อยู่</mat-label>
+                                    <textarea matInput [placeholder]="'ที่อยู่'" [rows]="5" formControlName="address"></textarea>
                                 </mat-form-field>
                             </div>
                         </div>

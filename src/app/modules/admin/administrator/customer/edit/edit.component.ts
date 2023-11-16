@@ -67,7 +67,6 @@ export class EditComponent implements OnInit, AfterViewInit, OnDestroy {
     formDataIron: FormGroup;
     formDataCleanIron: FormGroup;
     formDataCompression: FormGroup;
-    formSave: FormGroup;
     flashErrorMessage: string;
     flashMessage: 'success' | 'error' | null = null;
     isLoading: boolean = false;
@@ -103,19 +102,7 @@ export class EditComponent implements OnInit, AfterViewInit, OnDestroy {
         private _authService: AuthService
     ) {
         this.formData = this._formBuilder.group({
-            id: '',
-            category_product_id: '',
-            code: '',
-            name: '',
-            detail: '',
-            qty: '',
-            client_code: '',
-            shelve_id: '',
-            floor_id: '',
-            channel_id: '',
-            year: '',
-            images: [],
-            hold: '',
+
         });
 
         this.formDataIron = this._formBuilder.group({
@@ -169,18 +156,7 @@ export class EditComponent implements OnInit, AfterViewInit, OnDestroy {
             wang_son_9: '',
             wang_son_10: ''
         });
-
-        this.formSave = this._formBuilder.group({
-            order_id: '',
-            date: '',
-            print_use: '',
-            qty: '',
-            good: '',
-            fail: '',
-        })
     }
-
-
 
     // -----------------------------------------------------------------------------------------------------
     // @ Lifecycle hooks
@@ -193,11 +169,6 @@ export class EditComponent implements OnInit, AfterViewInit, OnDestroy {
         this.Id = this._activatedRoute.snapshot.paramMap.get('id');
         this._Service.getById(this.Id).subscribe((resp: any) => {
             this.itemData = resp.data;
-            console.log(this.itemData)
-            this.GetCate();
-            this.GetShelf();
-            this.GetFloor(this.itemData.shelve_id)
-            this.GetChanel(this.itemData.shelve_id, this.itemData.floor_id)
             this.formData.patchValue({
                 ...this.itemData,
                 category_product_id: +this.itemData.category_product_id,
@@ -213,9 +184,6 @@ export class EditComponent implements OnInit, AfterViewInit, OnDestroy {
             })
             this.formDataCompression.patchValue({
                 ...this.itemData.aud_item,
-            })
-            this.formSave.patchValue({
-                order_id: this.Id
             })
             this._changeDetectorRef.detectChanges();
             console.log(this.formData.value)
@@ -305,18 +273,12 @@ export class EditComponent implements OnInit, AfterViewInit, OnDestroy {
             // If the confirm button pressed...
             if (result === 'confirmed') {
                 let formValue = this.formData.value;
-                this.formData.patchValue({
-                    images: []
-                })
-                const formData = new FormData();
-                Object.entries(formValue).forEach(([key, value]: any[]) => {
-                    formData.append(key, value);
-                });
+
                 // Disable the form
-                this._Service.update(formData).subscribe({
+                this._Service.update(formValue,this.Id).subscribe({
                     next: (resp: any) => {
                         this._router
-                            .navigateByUrl('product/list')
+                            .navigateByUrl('customer/list')
                             .then(() => { });
                     },
                     error: (err: any) => {
@@ -566,11 +528,7 @@ export class EditComponent implements OnInit, AfterViewInit, OnDestroy {
             }
         });
     }
-    Edit(id: any) {
-        this._router.navigate([
-            '/order/edit/' + id
-        ])
-    }
+
 
     onSelect(event) {
         this.files.push(...event.addedFiles);
