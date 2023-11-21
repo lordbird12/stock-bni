@@ -53,11 +53,7 @@
                                                 <div class="text-lg font-medium tracking-tight leading-6 truncate">
                                                     {{ item.name }}
                                                 </div>
-                                                <div class="w-full p-1 md:p-2">
-                                                    <img alt="gallery"
-                                                        class="block h-full w-full rounded-lg object-cover object-center"
-                                                        [src]="item.image" />
-                                                </div>
+
                                                 <div class="ml-2 -mt-2 -mr-3">
                                                     <button mat-icon-button (click)="edit(item.id)">
                                                         <mat-icon class="icon-size-5" [svgIcon]="'heroicons_solid:eye'">
