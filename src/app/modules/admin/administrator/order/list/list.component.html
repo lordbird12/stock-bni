@@ -1,8 +1,7 @@
 <div class="sm:absolute sm:inset-0 flex flex-col flex-auto min-w-0 sm:overflow-hidden bg-card dark:bg-transparent">
 
     <!-- Header -->
-    <div
-        class="relative flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between py-8 px-6 md:px-8 border-b">
+    <div class="relative flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between py-8 px-6 md:px-8 border-b">
         <!-- Loader -->
         <div class="absolute inset-x-0 bottom-0" *ngIf="isLoading">
             <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
@@ -12,7 +11,6 @@
         <!-- Actions -->
         <div class="flex shrink-0 items-center mt-6 sm:mt-0 sm:ml-4">
 
-            <!-- Add product button -->
             <a routerLink="../../order/new" class="ml-4" mat-flat-button [color]="'primary'">
                 <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
                 <span class="ml-2 mr-1">เพิ่มใหม่</span>
@@ -31,37 +29,54 @@
                     <tr>
                         <th>ลำดับ</th>
                         <th>เลขที่</th>
-                        <th>รหัสแม่พิมพ์</th>
-                        <th>รายละเอียด</th>
-                        <th>วันที่สร้าง</th>
+                        <th>ลูกค้า</th>
+                        <th>รายการ</th>
+                        <th>จำนวนสั่ง</th>
+                        <th>จำนวนผลิตได้</th>
                         <th>สถานะ</th>
+                        <th>วันที่สร้าง</th>
                         <th>จัดการ</th>
                     </tr>
                 </thead>
                 <tbody *ngIf="dataRow?.length != 0">
                     <tr *ngFor="let item of dataRow; let i = index">
                         <td style="width:5%">{{ pages.begin + (i + 1) }}</td>
-                        <td style="width:15%">
+                        <td style="width:10%">
                             {{item.or_no ?? '-'}}
                         </td>
-                        <td style="width:20%">{{ item.product?.code ?? "-" }}</td>
-                        <td style="width:20%">
-                            {{item.remark ?? '-'}}
-                        </td>
-                        <td style="width:20%"> {{ item.created_at | date : "dd-MM-yyyy hh:mm a " }}</td>
-                        <td style="width:5%">
+                        <td style="width:20%">{{ item.client?.name ?? "-" }}</td>
+                        <td>{{ item.product?.code ?? "-" }}</td>
+                        <td>{{ item.iron?.qty ?? "-" }}</td>
+                        <td>{{item.total_complete ?? '-'}}</td>
 
-                            <span class="rounded-xl bg-orange-300 p-2 font-bold" *ngIf="item.status === 'Open'">
+                        <td style="width:15%">
+
+                            <span class="rounded-xl bg-yellow-300 p-2 font-bold" *ngIf="item.status === 'เปิดใบสั่งงาน'">
                                 {{item.status ?? '-'}}
                             </span>
-                            <span class="rounded-xl bg-blue-300 p-2 font-bold" *ngIf="item.status === 'Process'">
+                            <span class="rounded-xl bg-orange-300 p-2 font-bold" *ngIf="item.status === 'แผนกปั้มเหล็ก'">
                                 {{item.status ?? '-'}}
                             </span>
-                            <span class="rounded-xl bg-green-300 p-2 font-bold" *ngIf="item.status === 'Finish'">
+                            <span class="rounded-xl bg-orange-300 p-2 font-bold" *ngIf="item.status === 'แผนกล้างเหล็ก+ยิงทราย'">
+                                {{item.status ?? '-'}}
+                            </span>
+                            <span class="rounded-xl bg-orange-300 p-2 font-bold" *ngIf="item.status === 'แผนกอัดชิ้นงาน'">
+                                {{item.status ?? '-'}}
+                            </span>
+                            <span class="rounded-xl bg-orange-300 p-2 font-bold" *ngIf="item.status === 'แผนกQC'">
+                                {{item.status ?? '-'}}
+                            </span>
+                            <span class="rounded-xl bg-blue-300 p-2 font-bold" *ngIf="item.status === 'รอส่ง'">
+                                {{item.status ?? '-'}}
+                            </span>
+                            <span class="rounded-xl bg-green-300 p-2 font-bold" *ngIf="item.status === 'จัดส่งสำเร็จ'">
                                 {{item.status ?? '-'}}
                             </span>
                         </td>
-                        <td style="width: 15%">
+                        <td style="width:10%"> {{ item.created_at | date : "dd-MM-yyyy hh:mm a " }}</td>
+
+                        <td style="width: 10%">
+
                             <button mat-button (click)="edit(item.id)">
                                 <mat-icon>edit</mat-icon>
                             </button>

@@ -24,6 +24,7 @@ import {
     Observable,
     Subject,
     switchMap,
+    startWith,
     takeUntil,
 } from 'rxjs';
 import { fuseAnimations } from '@fuse/animations';
@@ -36,7 +37,6 @@ import { sortBy, startCase } from 'lodash-es';
 import { AssetType, Pagination } from '../page.types';
 import { Service } from '../page.service';
 import moment from 'moment';
-// import { ImportOSMComponent } from '../card/import-osm/import-osm.component';
 
 @Component({
     selector: 'edit',
@@ -63,7 +63,7 @@ export class EditComponent implements OnInit, AfterViewInit, OnDestroy {
 
     Id: string;
     itemData: any = [];
-    formSave: FormGroup
+    formSave: FormGroup;
     formData: FormGroup;
     formDataIron: FormGroup;
     formDataCleanIron: FormGroup;
@@ -72,7 +72,6 @@ export class EditComponent implements OnInit, AfterViewInit, OnDestroy {
     flashMessage: 'success' | 'error' | null = null;
     isLoading: boolean = false;
     searchInputControl: FormControl = new FormControl();
-    selectedProduct: any | null = null;
     filterForm: FormGroup;
     tagsEditMode: boolean = false;
     private _unsubscribeAll: Subject<any> = new Subject<any>();
@@ -92,7 +91,25 @@ export class EditComponent implements OnInit, AfterViewInit, OnDestroy {
     userData: any = [];
     customerData: any = [];
     productData: any[] = [];
-    status : any[] = ['Open','Process','Finish']
+    status: any[] = [
+        'เปิดใบสั่งงาน',
+        'แผนกปั้มเหล็ก',
+        'แผนกล้างเหล็ก+ยิงทราย',
+        'แผนกอัดชิ้นงาน',
+        'แผนกQC',
+        'รอส่ง',
+        'จัดส่งสำเร็จ',
+    ];
+
+    ProductControl = new FormControl('');
+    ClientControl = new FormControl('');
+
+    filteredOptionsProduct: Observable<string[]>;
+    filteredOptionsClient: Observable<string[]>;
+
+    selectedProduct: string = '';
+    selectedClient: string = '';
+
     /**
      * Constructor
      */
@@ -106,19 +123,21 @@ export class EditComponent implements OnInit, AfterViewInit, OnDestroy {
         private _activatedRoute: ActivatedRoute,
         private _authService: AuthService
     ) {
-        this.GetCustomer();
-        this.GetProduct();
-        this.GetUser();
         this.formData = this._formBuilder.group({
-            id:'',
+            id: '',
+            date: '',
             product_id: '',
             client_id: '',
             user_id: '',
             year: '',
             remark: '',
+            name: '',
+            qty: '',
+            shelf:'',
+            floor:'',
+            channel:'',
             images: [],
             status: '',
-
         });
 
         this.formDataIron = this._formBuilder.group({
@@ -130,7 +149,7 @@ export class EditComponent implements OnInit, AfterViewInit, OnDestroy {
             iron_use: '',
             pad_iron: '',
             pum: '',
-            owner: ''
+            owner: '',
         });
 
         this.formDataCleanIron = this._formBuilder.group({
@@ -170,18 +189,19 @@ export class EditComponent implements OnInit, AfterViewInit, OnDestroy {
             wang_son_8: '',
             wang_son_9: '',
             wang_son_10: '',
-            lock_roll: ''
-
+            lock_roll: '',
         });
 
         this.formSave = this._formBuilder.group({
+            id: '',
             order_id: '',
             date: '',
             print_use: '',
             qty: '',
             good: '',
             fail: '',
-        })
+            employee: '',
+        });
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -193,36 +213,104 @@ export class EditComponent implements OnInit, AfterViewInit, OnDestroy {
      */
     ngOnInit(): void {
         this.Id = this._activatedRoute.snapshot.paramMap.get('id');
+
+        this.GetCustomer();
+        this.GetProduct();
+        this.GetUser();
+        this.reload();
+
+        this.filteredOptionsProduct = this.ProductControl.valueChanges.pipe(
+            startWith(''),
+            map((value) => this._filterProduct(value || ''))
+        );
+
+        this.filteredOptionsClient = this.ClientControl.valueChanges.pipe(
+            startWith(''),
+            map((value) => this._filterClient(value || ''))
+        );
+
+        // this._changeDetectorRef.detectChanges();
+    }
+
+    displayProduct(subject) {
+        if (!subject) return '';
+        let index = this.productData.findIndex(
+            (state) => state.id === parseInt(subject)
+        );
+        return this.productData[index].name;
+    }
+
+    displayClient(subject) {
+        if (!subject) return '';
+        let index = this.customerData.findIndex(
+            (state) => state.id === parseInt(subject)
+        );
+        return this.customerData[index].name;
+    }
+
+    private _filterProduct(value: string): string[] {
+        const filterValue = value.toLowerCase();
+        return this.productData.filter((option) =>
+            option.name.toLowerCase().includes(filterValue)
+        );
+    }
+
+    private _filterClient(value: string): string[] {
+        const filterValue = value.toLowerCase();
+        return this.customerData.filter((option) =>
+            option.name.toLowerCase().includes(filterValue)
+        );
+    }
+
+    reload(): void {
         this._Service.getById(this.Id).subscribe((resp: any) => {
-            console.log(resp.data)
             this.itemData = resp.data;
             this.formData.patchValue({
                 id: this.Id,
-                product_id: this.itemData.product_id != null ? +this.itemData.product_id : null,
-                client_id: this.itemData.client_id != null ? +this.itemData.client_id : null,
-                user_id: this.itemData.user_id != null ? +this.itemData.user_id : null,
-                year: this.itemData.year != null ? this.itemData.year : null,
-                remark: this.itemData.remark != null ? this.itemData.remark : null,
-                status: this.itemData.status != null ? this.itemData.status : null
+                product_id:
+                    this.itemData.product_id != null
+                        ? +this.itemData.product_id
+                        : null,
+                client_id:
+                    this.itemData.client_id != null
+                        ? +this.itemData.client_id
+                        : null,
+                user_id:
+                    this.itemData.user_id != null
+                        ? +this.itemData.user_id
+                        : null,
+                year: this.itemData.year != null ? this.itemData.year : '-',
+                remark:
+                    this.itemData.remark != null ? this.itemData.remark : '-',
+                status:
+                    this.itemData.status != null ? this.itemData.status : null,
+                date: this.itemData.date != null ? this.itemData.date : null,
+                name: this.itemData.name != null ? this.itemData.name : null,
+                qty: this.itemData.qty != null ? this.itemData.qty : null,
+                shelf: this.itemData.shelf != null ? this.itemData.shelf.name : null,
+                floor: this.itemData.floor != null ? this.itemData.floor.name : null,
+                channel: this.itemData.channel != null ? this.itemData.channel.name : null,
             });
             this.formDataIron.patchValue({
                 ...this.itemData.iron,
-            })
+            });
             this.formDataCleanIron.patchValue({
                 ...this.itemData.clear_iron,
-            })
+            });
             this.formDataCompression.patchValue({
                 ...this.itemData.aud_item,
-            })
+            });
             this.formSave.patchValue({
-                date: new Date()
-            })
+                date: this.itemData.date,
+            });
+
+            setTimeout(() => {
+                this.ProductControl.setValue(this.itemData.product_id);
+                this.ClientControl.setValue(this.itemData.client_id);
+                this._changeDetectorRef.detectChanges();
+            },2000);
             this._changeDetectorRef.detectChanges();
         });
-
-
-
-
     }
 
     GetCustomer(): void {
@@ -243,12 +331,11 @@ export class EditComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     onChangeShelf(event: any) {
-        this.shelfId = event
-        this.GetFloor(event)
+        this.shelfId = event;
+        this.GetFloor(event);
     }
     onChangeFloor(event: any) {
-
-        this.GetChanel(this.shelfId, event)
+        this.GetChanel(this.shelfId, event);
     }
 
     GetCate(): void {
@@ -278,7 +365,7 @@ export class EditComponent implements OnInit, AfterViewInit, OnDestroy {
     /**
      * After view init
      */
-    ngAfterViewInit(): void { }
+    ngAfterViewInit(): void {}
 
     /**
      * On destroy
@@ -288,6 +375,7 @@ export class EditComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     update(): void {
+  
         this.flashMessage = null;
         this.flashErrorMessage = null;
         // Return if the form is invalid
@@ -322,9 +410,12 @@ export class EditComponent implements OnInit, AfterViewInit, OnDestroy {
             // If the confirm button pressed...
             if (result === 'confirmed') {
                 let formValue = this.formData.value;
+                formValue.date = moment(formValue.date).format('YYYY-MM-DD');
+                formValue.product_id = this.ProductControl.value;
+                formValue.client_id = this.ClientControl.value;
                 this.formData.patchValue({
-                    images: []
-                })
+                    images: [],
+                });
                 const formData = new FormData();
                 Object.entries(formValue).forEach(([key, value]: any[]) => {
                     formData.append(key, value);
@@ -332,9 +423,7 @@ export class EditComponent implements OnInit, AfterViewInit, OnDestroy {
 
                 this._Service.update(formData).subscribe({
                     next: (resp: any) => {
-                        this._router
-                            .navigateByUrl('order/list')
-                            .then(() => { });
+                        this._router.navigateByUrl('order/list').then(() => {});
                     },
                     error: (err: any) => {
                         this._fuseConfirmationService.open({
@@ -366,8 +455,8 @@ export class EditComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     updateIron(): void {
         this.formDataIron.patchValue({
-            order_id: this.Id
-        })
+            order_id: this.Id,
+        });
         this.flashMessage = null;
         this.flashErrorMessage = null;
         // Return if the form is invalid
@@ -405,9 +494,7 @@ export class EditComponent implements OnInit, AfterViewInit, OnDestroy {
                 // Disable the form
                 this._Service.updateIron(formValue).subscribe({
                     next: (resp: any) => {
-                        this._router
-                            .navigateByUrl('order/list')
-                            .then(() => { });
+                        this._router.navigateByUrl('order/list').then(() => {});
                     },
                     error: (err: any) => {
                         this._fuseConfirmationService.open({
@@ -439,8 +526,8 @@ export class EditComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     updateformDataCleanIron(): void {
         this.formDataCleanIron.patchValue({
-            order_id: this.Id
-        })
+            order_id: this.Id,
+        });
         this.flashMessage = null;
         this.flashErrorMessage = null;
         // Return if the form is invalid
@@ -478,9 +565,7 @@ export class EditComponent implements OnInit, AfterViewInit, OnDestroy {
                 // Disable the form
                 this._Service.updateClearIron(formValue).subscribe({
                     next: (resp: any) => {
-                        this._router
-                            .navigateByUrl('order/list')
-                            .then(() => { });
+                        this._router.navigateByUrl('order/list').then(() => {});
                     },
                     error: (err: any) => {
                         this._fuseConfirmationService.open({
@@ -512,8 +597,8 @@ export class EditComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     updateformAudItem(): void {
         this.formDataCompression.patchValue({
-            order_id: this.Id
-        })
+            order_id: this.Id,
+        });
         this.flashMessage = null;
         this.flashErrorMessage = null;
         // Return if the form is invalid
@@ -551,9 +636,7 @@ export class EditComponent implements OnInit, AfterViewInit, OnDestroy {
                 // Disable the form
                 this._Service.updateAudItem(formValue).subscribe({
                     next: (resp: any) => {
-                        this._router
-                            .navigateByUrl('order/list')
-                            .then(() => { });
+                        this._router.navigateByUrl('order/list').then(() => {});
                     },
                     error: (err: any) => {
                         this._fuseConfirmationService.open({
@@ -586,8 +669,8 @@ export class EditComponent implements OnInit, AfterViewInit, OnDestroy {
 
     updateformDataSave(): void {
         this.formSave.patchValue({
-            order_id: this.Id
-        })
+            order_id: this.Id,
+        });
         this.flashMessage = null;
         this.flashErrorMessage = null;
         // Return if the form is invalid
@@ -622,15 +705,15 @@ export class EditComponent implements OnInit, AfterViewInit, OnDestroy {
             // If the confirm button pressed...
             if (result === 'confirmed') {
                 let formValue = this.formSave.value;
-                formValue.date = moment(formValue.date).format('YYYY-MM-DD')
+                formValue.date = moment(formValue.date).format('YYYY-MM-DD');
                 // Disable the form
 
                 this._Service.updateSave(formValue).subscribe({
                     next: (resp: any) => {
-                        this._Service.getById(this.Id).subscribe((resp: any) => {
-                            this.formSave.reset();
-                        })
+                        this.reload();
+                        this.formSave.reset();
                         this._changeDetectorRef.detectChanges();
+                        window.scrollTo(0, document.body.scrollHeight);
                     },
                     error: (err: any) => {
                         this._fuseConfirmationService.open({
@@ -660,7 +743,6 @@ export class EditComponent implements OnInit, AfterViewInit, OnDestroy {
             }
         });
     }
-
 
     onSelect(event) {
         this.files.push(...event.addedFiles);
@@ -694,5 +776,25 @@ export class EditComponent implements OnInit, AfterViewInit, OnDestroy {
             // Mark for check
             this._changeDetectorRef.markForCheck();
         }, 3000);
+    }
+
+    editClear(item: any): void {
+        console.log(item);
+        this.formSave.patchValue({
+            id: item.id,
+            order_id: item.order_id,
+            date: item.date,
+            print_use: item.print_use,
+            qty: item.qty,
+            good: item.good,
+            fail: item.fail,
+            employee: item.employee,
+        });
+
+        window.scroll({
+            top: 0,
+            left: 0,
+            behavior: 'smooth',
+        });
     }
 }

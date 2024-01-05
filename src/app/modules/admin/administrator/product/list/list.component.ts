@@ -170,6 +170,10 @@ export class ListComponent implements OnInit, AfterViewInit, OnDestroy {
     pdf(id: any) {
         window.open(environment.API_URL + '/api/export_product/' + id)
     }
+
+    order(id: any) {
+        this._router.navigate(['order/new/' + id]);
+    }
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------

@@ -19,50 +19,88 @@
                 <div class="grid gap-4 sm:grid-cols-1 w-full md:grid-cols-1">
                     <div class="bg-card rounded-xl md:shadow overflow-hidden px-8 pt-6 pb-8 mb-4 flex flex-col my-2">
                         <div class="-mx-3 md:flex mb-6">
-                            <div class="md:w-1/2 px-3 mb-6 md:mb-0">
+                            <div class="md:w-1/3 px-3 mb-6 md:mb-0">
                                 <mat-form-field class="w-full">
-                                    <mat-label>เลือกแม่พิมพ์</mat-label>
-                                    <mat-select formControlName="product_id">
-                                        <mat-option *ngFor="let item of productData;" [value]="item.id">
-                                            {{item.name}}
-                                        </mat-option>
-                                    </mat-select>
+                                    <mat-label>วันที่</mat-label>
+                                    <!-- <input matInput [placeholder]="'วันที่'" formControlName="date"> -->
+                                    <input matInput [matDatepicker]="picker" formControlName="date">
+                                    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                                    <mat-datepicker #picker></mat-datepicker>
                                 </mat-form-field>
                             </div>
-                            <div class="md:w-1/2 px-3 mb-6 md:mb-0">
+
+                            <!-- <div class="md:w-1/2 px-3 mb-6 md:mb-0">
                                 <mat-form-field class="w-full">
                                     <mat-label>ปี</mat-label>
                                     <input matInput [placeholder]="'ปี'" formControlName="year">
                                 </mat-form-field>
-                            </div>
+                            </div> -->
                         </div>
                         <div class="-mx-3 md:flex mb-6">
-                            <div class="md:w-1/2 px-3 mb-6 md:mb-0">
-                                <mat-form-field class="w-full">
-                                    <mat-label>ลูกค้า</mat-label>
-                                    <mat-select  formControlName="client_id">
-                                        <mat-option *ngFor="let item of customerData;" [value]="item.id">
-                                            {{item.name}}
+                            <div class="md:w-1/3 px-3 mb-6 md:mb-0">
+                                <mat-form-field appearance="fill" class="w-full">
+                                    <mat-label>เลือกแม่พิมพ์</mat-label>
+                                    <input type="text" placeholder="เลือกแม่พิมพ์" matInput [formControl]="ProductControl" [matAutocomplete]="product" [(ngModel)]="selectedProduct" />
+                                    <button *ngIf="selectedProduct" matSuffix mat-icon-button aria-label="Clear" (click)="selectedProduct = ''">
+                                        <mat-icon>close</mat-icon>
+                                    </button>
+                                    <mat-autocomplete #product="matAutocomplete" [displayWith]="displayProduct.bind(this)">
+                                        <mat-option *ngFor="let option of filteredOptionsProduct | async" [value]="option.id">
+                                            {{ option.name }}
                                         </mat-option>
-                                    </mat-select>
+                                    </mat-autocomplete>
                                 </mat-form-field>
                             </div>
-                            <div class="md:w-1/2 px-3 mb-6 md:mb-0">
+                            <div class="md:w-1/3 px-3 mb-6 md:mb-0">
+                                <mat-form-field class="w-full">
+                                    <mat-label>รายการ</mat-label>
+                                    <input matInput [placeholder]="'รายการ'" formControlName="name">
+                                </mat-form-field>
+                            </div>
+                            <div class="md:w-1/3 px-3 mb-6 md:mb-0">
+                                <mat-form-field class="w-full">
+                                    <mat-label>จำนวนที่สั่ง</mat-label>
+                                    <input matInput [placeholder]="'จำนวนที่สั่ง'" formControlName="qty">
+                                </mat-form-field>
+                            </div>
+
+                        </div>
+
+                        <div class="-mx-3 md:flex mb-6">
+                            <div class="md:w-full px-3 mb-6 md:mb-0">
+                                <mat-form-field appearance="fill" class="w-full">
+                                    <mat-label>ลูกค้า</mat-label>
+                                    <input type="text" placeholder="ลูกค้า" matInput [formControl]="ClientControl" [matAutocomplete]="client" [(ngModel)]="selectedClient" />
+                                    <button *ngIf="selectedClient" matSuffix mat-icon-button aria-label="Clear" (click)="selectedClient = ''">
+                                        <mat-icon>close</mat-icon>
+                                    </button>
+                                    <mat-autocomplete #client="matAutocomplete" [displayWith]="displayClient.bind(this)">
+                                        <mat-option *ngFor="let option of filteredOptionsClient | async" [value]="option.id">
+                                            {{ option.name }}
+                                        </mat-option>
+                                    </mat-autocomplete>
+                                </mat-form-field>
+                            </div>
+                        </div>
+
+                        <div class="-mx-3 md:flex mb-6">
+                            <div class="md:w-full px-3 mb-6 md:mb-0">
+                                <mat-form-field class="w-full">
+                                    <mat-label>รายละเอียดลูกค้า</mat-label>
+                                    <textarea matInput [placeholder]="'รายละเอียดลูกค้า'" [rows]="5" formControlName="remark"></textarea>
+                                </mat-form-field>
+                            </div>
+                        </div>
+
+                        <div class="-mx-3 md:flex mb-6">
+                            <div class="md:w-full px-3 mb-6 md:mb-0">
                                 <mat-form-field class="w-full">
                                     <mat-label>พนักงาน</mat-label>
-                                    <mat-select  formControlName="user_id">
+                                    <mat-select formControlName="user_id">
                                         <mat-option *ngFor="let item of userData;" [value]="item.id">
                                             {{item.name}}
                                         </mat-option>
                                     </mat-select>
-                                </mat-form-field>
-                            </div>
-                        </div>
-                        <div class="-mx-3 md:flex mb-6">
-                            <div class="md:w-full px-3 mb-6 md:mb-0">
-                                <mat-form-field class="w-full">
-                                    <mat-label>รายละเอียด</mat-label>
-                                    <textarea matInput [placeholder]="'รายละเอียด'" [rows]="5" formControlName="remark"></textarea>
                                 </mat-form-field>
                             </div>
                         </div>

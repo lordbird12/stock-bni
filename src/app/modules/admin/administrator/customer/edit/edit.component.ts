@@ -102,59 +102,13 @@ export class EditComponent implements OnInit, AfterViewInit, OnDestroy {
         private _authService: AuthService
     ) {
         this.formData = this._formBuilder.group({
-
-        });
-
-        this.formDataIron = this._formBuilder.group({
-            product_id: '',
-            date: '',
-            order: '',
-            client: '',
-            qty: '',
-            iron_use: '',
-            pad_iron: '',
-            pum: '',
-            owner: ''
-        });
-
-        this.formDataCleanIron = this._formBuilder.group({
-
-            product_id: '',
-            yod_pum_dai: '',
-            yod_nub_dai: '',
-            owner: '',
-        });
-
-        this.formDataCompression = this._formBuilder.group({
-            product_id: '',
-            machine: '',
-            yang_1: '',
-            yang_2: '',
-            hot_1: '',
-            hot_2: '',
-            time: '',
-            qty: '',
-            weight: '',
-            wang_yang_1: '',
-            wang_yang_2: '',
-            wang_yang_3: '',
-            wang_yang_4: '',
-            wang_yang_5: '',
-            wang_yang_6: '',
-            wang_yang_7: '',
-            wang_yang_8: '',
-            wang_yang_9: '',
-            wang_yang_10: '',
-            wang_son_1: '',
-            wang_son_2: '',
-            wang_son_3: '',
-            wang_son_4: '',
-            wang_son_5: '',
-            wang_son_6: '',
-            wang_son_7: '',
-            wang_son_8: '',
-            wang_son_9: '',
-            wang_son_10: ''
+            id: '',
+            name: [''],
+            code: [''],
+            email: [''],
+            phone: [''],
+            tax: [''],
+            address: '',
         });
     }
 
@@ -167,39 +121,34 @@ export class EditComponent implements OnInit, AfterViewInit, OnDestroy {
      */
     ngOnInit(): void {
         this.Id = this._activatedRoute.snapshot.paramMap.get('id');
+        this.formData = this._formBuilder.group({
+            name: '',
+            code: '',
+            email: '',
+            phone: '',
+            tax: '',
+            address: '',
+        });
         this._Service.getById(this.Id).subscribe((resp: any) => {
             this.itemData = resp.data;
             this.formData.patchValue({
-                ...this.itemData,
-                category_product_id: +this.itemData.category_product_id,
-                shelve_id: +this.itemData.shelve_id,
-                floor_id: +this.itemData.floor_id,
-                channel_id: +this.itemData.channel_id,
+                id: this.itemData.id,
+                name: this.itemData.name,
+                code: this.itemData.code,
+                email: this.itemData.email,
+                phone: this.itemData.phone,
+                tax: this.itemData.tax,
+                address: this.itemData.address,
             });
-            this.formDataIron.patchValue({
-                ...this.itemData.iron,
-            })
-            this.formDataCleanIron.patchValue({
-                ...this.itemData.clear_iron,
-            })
-            this.formDataCompression.patchValue({
-                ...this.itemData.aud_item,
-            })
-            this._changeDetectorRef.detectChanges();
-            console.log(this.formData.value)
         });
-
-
-
     }
 
     onChangeShelf(event: any) {
-        this.shelfId = event
-        this.GetFloor(event)
+        this.shelfId = event;
+        this.GetFloor(event);
     }
     onChangeFloor(event: any) {
-
-        this.GetChanel(this.shelfId, event)
+        this.GetChanel(this.shelfId, event);
     }
 
     GetCate(): void {
@@ -229,7 +178,7 @@ export class EditComponent implements OnInit, AfterViewInit, OnDestroy {
     /**
      * After view init
      */
-    ngAfterViewInit(): void { }
+    ngAfterViewInit(): void {}
 
     /**
      * On destroy
@@ -275,11 +224,11 @@ export class EditComponent implements OnInit, AfterViewInit, OnDestroy {
                 let formValue = this.formData.value;
 
                 // Disable the form
-                this._Service.update(formValue,this.Id).subscribe({
+                this._Service.update(formValue, this.Id).subscribe({
                     next: (resp: any) => {
                         this._router
                             .navigateByUrl('customer/list')
-                            .then(() => { });
+                            .then(() => {});
                     },
                     error: (err: any) => {
                         this._fuseConfirmationService.open({
@@ -311,8 +260,8 @@ export class EditComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     updateIron(): void {
         this.formDataIron.patchValue({
-            product_id: this.Id
-        })
+            product_id: this.Id,
+        });
         this.flashMessage = null;
         this.flashErrorMessage = null;
         // Return if the form is invalid
@@ -352,7 +301,7 @@ export class EditComponent implements OnInit, AfterViewInit, OnDestroy {
                     next: (resp: any) => {
                         this._router
                             .navigateByUrl('product/list')
-                            .then(() => { });
+                            .then(() => {});
                     },
                     error: (err: any) => {
                         this._fuseConfirmationService.open({
@@ -384,8 +333,8 @@ export class EditComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     updateformDataCleanIron(): void {
         this.formDataCleanIron.patchValue({
-            product_id: this.Id
-        })
+            product_id: this.Id,
+        });
         this.flashMessage = null;
         this.flashErrorMessage = null;
         // Return if the form is invalid
@@ -425,7 +374,7 @@ export class EditComponent implements OnInit, AfterViewInit, OnDestroy {
                     next: (resp: any) => {
                         this._router
                             .navigateByUrl('product/list')
-                            .then(() => { });
+                            .then(() => {});
                     },
                     error: (err: any) => {
                         this._fuseConfirmationService.open({
@@ -457,8 +406,8 @@ export class EditComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     updateformAudItem(): void {
         this.formDataCompression.patchValue({
-            product_id: this.Id
-        })
+            product_id: this.Id,
+        });
         this.flashMessage = null;
         this.flashErrorMessage = null;
         // Return if the form is invalid
@@ -498,7 +447,7 @@ export class EditComponent implements OnInit, AfterViewInit, OnDestroy {
                     next: (resp: any) => {
                         this._router
                             .navigateByUrl('product/list')
-                            .then(() => { });
+                            .then(() => {});
                     },
                     error: (err: any) => {
                         this._fuseConfirmationService.open({
@@ -528,7 +477,6 @@ export class EditComponent implements OnInit, AfterViewInit, OnDestroy {
             }
         });
     }
-
 
     onSelect(event) {
         this.files.push(...event.addedFiles);

@@ -41,7 +41,6 @@ import { Service } from '../page.service';
     selector: 'new',
     templateUrl: './new.component.html',
     styleUrls: ['./new.component.scss'],
-
     animations: fuseAnimations,
 })
 export class NewComponent implements OnInit, AfterViewInit, OnDestroy {
@@ -172,7 +171,7 @@ export class NewComponent implements OnInit, AfterViewInit, OnDestroy {
                 this._Service.create(formData).subscribe({
                     next: (resp: any) => {
                         this._router
-                            .navigateByUrl('announcement/list')
+                            .navigateByUrl('product-category/list')
                             .then(() => {});
                     },
                     error: (err: any) => {

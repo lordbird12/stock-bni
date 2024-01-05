@@ -26,6 +26,7 @@ import {
     Subject,
     switchMap,
     takeUntil,
+    startWith
 } from 'rxjs';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
@@ -36,7 +37,7 @@ import { AuthService } from 'app/core/auth/auth.service';
 import { sortBy, startCase } from 'lodash-es';
 import { AssetType, Pagination } from '../page.types';
 import { Service } from '../page.service';
-// import { ImportOSMComponent } from '../card/import-osm/import-osm.component';
+import moment from 'moment';
 
 @Component({
     selector: 'new',
@@ -68,11 +69,11 @@ export class NewComponent implements OnInit, AfterViewInit, OnDestroy {
     flashMessage: 'success' | 'error' | null = null;
     isLoading: boolean = false;
     searchInputControl: FormControl = new FormControl();
-    selectedProduct: any | null = null;
+
     filterForm: FormGroup;
     tagsEditMode: boolean = false;
     env_path = environment.API_URL;
-
+    Id: string;
     item1Data: any = [];
     item2Data: any = [];
 
@@ -93,6 +94,15 @@ export class NewComponent implements OnInit, AfterViewInit, OnDestroy {
     supplierId: string | null;
     pagination: Pagination;
 
+    ProductControl = new FormControl('');
+    ClientControl = new FormControl('');
+
+    filteredOptionsProduct: Observable<string[]>;
+    filteredOptionsClient: Observable<string[]>;
+
+    selectedProduct: string = '';
+    selectedClient: string = '';
+
     /**
      * Constructor
      */
@@ -101,11 +111,13 @@ export class NewComponent implements OnInit, AfterViewInit, OnDestroy {
         private _fuseConfirmationService: FuseConfirmationService,
         private _formBuilder: FormBuilder,
         private _Service: Service,
-        private _router: Router) {
-            this.GetCustomer();
-            this.GetProduct();
-            this.GetUser();
-        }
+        private _activatedRoute: ActivatedRoute,
+        private _router: Router
+    ) {
+        this.GetCustomer();
+        this.GetProduct();
+        this.GetUser();
+    }
 
     // -----------------------------------------------------------------------------------------------------
     // @ Lifecycle hooks
@@ -115,26 +127,70 @@ export class NewComponent implements OnInit, AfterViewInit, OnDestroy {
      * On init
      */
     async ngOnInit(): Promise<void> {
+        // this.Id = this._activatedRoute.snapshot.paramMap.get('id');
         this.formData = this._formBuilder.group({
+            date: '',
             product_id: '',
             client_id: '',
             user_id: '',
             year: '',
             remark: '',
+            qty: '',
+            name: '',
             images: [],
-
         });
         this.GetCate();
         this.GetShelf();
+
+        this.filteredOptionsProduct = this.ProductControl.valueChanges.pipe(
+            startWith(''),
+            map((value) => this._filterProduct(value || ''))
+        );
+
+        this.filteredOptionsClient = this.ClientControl.valueChanges.pipe(
+            startWith(''),
+            map((value) => this._filterClient(value || ''))
+        );
+
+    }
+
+
+    displayProduct(subject) {
+        if (!subject) return '';
+        let index = this.productData.findIndex(
+            (state) => state.id === parseInt(subject)
+        );
+        return this.productData[index].name;
+    }
+
+    displayClient(subject) {
+        if (!subject) return '';
+        let index = this.customerData.findIndex(
+            (state) => state.id === parseInt(subject)
+        );
+        return this.customerData[index].name;
+    }
+
+    private _filterProduct(value: string): string[] {
+        const filterValue = value.toLowerCase();
+        return this.productData.filter((option) =>
+            option.name.toLowerCase().includes(filterValue)
+        );
+    }
+
+    private _filterClient(value: string): string[] {
+        const filterValue = value.toLowerCase();
+        return this.customerData.filter((option) =>
+            option.name.toLowerCase().includes(filterValue)
+        );
     }
 
     onChangeShelf(event: any) {
-        this.shelfId = event
-        this.GetFloor(event)
+        this.shelfId = event;
+        this.GetFloor(event);
     }
     onChangeFloor(event: any) {
-
-        this.GetChanel(this.shelfId, event)
+        this.GetChanel(this.shelfId, event);
     }
 
     GetCate(): void {
@@ -157,19 +213,23 @@ export class NewComponent implements OnInit, AfterViewInit, OnDestroy {
     GetProduct(): void {
         this._Service.getProduct().subscribe((resp) => {
             this.productData = resp.data;
+            // this.formData.patchValue({
+            //     product_id: parseInt(this.Id),
+            // });
         });
+       
     }
 
     onChangeCustomer(event: any) {
-        let value = this.customerData.filter(item => item.id === event)
-        console.log(value[0].code)
+        let value = this.customerData.filter((item) => item.id === event);
+        console.log(value[0].code);
         this.formData.patchValue({
-            code : value[0].code,
-            name : value[0].name,
-            phone : value[0].phone,
-            email : value[0].email,
-            address : value[0].address,
-        })
+            code: value[0].code,
+            name: value[0].name,
+            phone: value[0].phone,
+            email: value[0].email,
+            address: value[0].address,
+        });
     }
 
     GetShelf(): void {
@@ -189,12 +249,12 @@ export class NewComponent implements OnInit, AfterViewInit, OnDestroy {
             this.chanelData = resp.data;
         });
     }
-    discard(): void { }
+    discard(): void {}
 
     /**
      * After view init
      */
-    ngAfterViewInit(): void { }
+    ngAfterViewInit(): void {}
 
     /**
      * On destroy
@@ -228,7 +288,7 @@ export class NewComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     create(): void {
-        console.log(this.formData.value.image)
+        console.log(this.formData.value.image);
 
         this.flashMessage = null;
         this.flashErrorMessage = null;
@@ -260,6 +320,9 @@ export class NewComponent implements OnInit, AfterViewInit, OnDestroy {
             // If the confirm button pressed...
             if (result === 'confirmed') {
                 let formValue = this.formData.value;
+                formValue.date = moment(formValue.date).format('YYYY-MM-DD');
+                formValue.product_id = this.ProductControl.value;
+                formValue.client_id = this.ClientControl.value;
                 const formData = new FormData();
 
                 Object.entries(formValue).forEach(([key, value]: any[]) => {
@@ -278,8 +341,8 @@ export class NewComponent implements OnInit, AfterViewInit, OnDestroy {
                 this._Service.create(formData).subscribe({
                     next: (resp) => {
                         this._router
-                            .navigateByUrl('order/edit/' +  resp.data.id)
-                            .then(() => { });
+                            .navigateByUrl('order/edit/' + resp.data.id)
+                            .then(() => {});
                     },
                     error: (err: any) => {
                         this._fuseConfirmationService.open({
@@ -316,7 +379,6 @@ export class NewComponent implements OnInit, AfterViewInit, OnDestroy {
         setTimeout(() => {
             this._changeDetectorRef.detectChanges();
         }, 150);
-
     }
 
     onRemove(event) {

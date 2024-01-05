@@ -1,8 +1,7 @@
 <div class="flex flex-col flex-auto min-w-0 bg-card dark:bg-transparent">
 
     <!-- Header -->
-    <div
-        class="flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between p-6 sm:py-8 sm:px-10 border-b bg-card dark:bg-transparent">
+    <div class="flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between p-6 sm:py-8 sm:px-10 border-b bg-card dark:bg-transparent">
         <div class="flex-1 min-w-0">
             <!-- Title -->
             <div class="mt-2">
@@ -21,13 +20,12 @@
 
                 <div class="flex flex-auto flex-wrap">
                     <!-- Name, SKU & etc. -->
-                    <div class="flex flex-row w-full">
+                    <div class="flex flex-row w-full lg:w-2/4">
                         <div class="flex flex-col w-full lg:w-4/4 sm:pl-8 justify-center" *ngIf="files.length === 0">
                             <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
                                 <div class=" flex flex-wrap justify-center">
 
-                                    <img alt="gallery" class="block object-fill h-48 w-48 rounded-lg object-center"
-                                        [src]="this.url_path" />
+                                    <img alt="gallery" class="block object-fill h-full w-150 rounded-lg object-center" [src]="this.url_path" />
                                 </div>
                             </dd>
 
@@ -49,8 +47,7 @@
                             <div class="flex flex-col w-full lg:w-4/4 sm:pl-8">
                                 <mat-form-field class="w-full">
                                     <mat-label class="font-bold">รายละเอียด</mat-label>
-                                    <textarea matInput rows="4" [formControlName]="'detail'"
-                                        placeholder="กรุณาระบุรายละเอียด"></textarea>
+                                    <textarea matInput rows="4" [formControlName]="'detail'" placeholder="กรุณาระบุรายละเอียด"></textarea>
                                 </mat-form-field>
                             </div>
                             <div class="flex flex-col w-full lg:w-4/4 sm:pl-8">
@@ -60,12 +57,23 @@
                                         <div class=" flex flex-wrap justify-start">
                                             <ngx-dropzone class="max-h-40 w-full" (change)="onSelect($event)">
                                                 <ngx-dropzone-label>รูปตู้</ngx-dropzone-label>
-                                                <ngx-dropzone-image-preview *ngFor="let f of files" [removable]="true"
-                                                    [file]="f" (removed)="onRemove(f)">
+                                                <ngx-dropzone-image-preview *ngFor="let f of files" [removable]="true" [file]="f" (removed)="onRemove(f)">
                                                 </ngx-dropzone-image-preview>
                                             </ngx-dropzone>
                                         </div>
                                     </dd>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-end w-full border-t py-4">
+                                <div class="flex items-center justify-end">
+                                    <a class="ml-4" mat-flat-button [routerLink]="['/shelf/list']">
+                                        <mat-icon svgIcon="heroicons_solid:x"></mat-icon>
+                                        ยกเลิก
+                                    </a>
+                                    <button class="px-6 ml-3 mat-primary" mat-flat-button (click)="update()">
+                                        <mat-icon svgIcon="heroicons_solid:check"></mat-icon>
+                                        ยืนยัน
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -79,16 +87,14 @@
         <div class="flex items-center justify-end w-full border-t px-10 py-4">
             <div class="flex items-center justify-end">
                 <button class="px-6 mat-primary" mat-flat-button (click)="newFloor(this.itemData.id)">
-                    <mat-icon svgIcon="heroicons_solid:plus"></mat-icon>
-                    เพิ่มชั้น
+                    เพิ่มชั้นเก็บของ
                 </button>
             </div>
         </div>
         <div class="flex items-center justify-end w-full  px-5 py-4 mb-50">
             <div class="flex flex-col flex-auto p-5 overflow-hidden sm:overflow-y-auto">
                 <table class="w-full text-m text-left text-gray-500 dark:text-gray-400">
-                    <thead
-                        class="text-lx text-center text-white uppercase bg-gray-500 dark:bg-gray-700 dark:text-gray-400 h-10">
+                    <thead class="text-lx text-center text-white uppercase bg-gray-500 dark:bg-gray-100 dark:text-gray-100 h-10">
                         <tr>
                             <th>
                                 <button mat-button (click)="expandFunction()">
@@ -96,7 +102,6 @@
                                 </button>
                             </th>
                             <th>ลำดับ</th>
-                            <th>ชื่อตู้</th>
                             <th>ชื่อชั้น</th>
                             <th>รายละเอียด</th>
                             <th>วันที่สร้าง</th>
@@ -105,8 +110,7 @@
                     </thead>
                     <ng-container *ngFor="let item of dataRow; let i = index">
                         <tbody *ngIf="dataRow?.length != 0">
-                            <tr
-                                class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 text-center">
+                            <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 text-center">
                                 <td style="width: 5%" (click)="
                                     dataRow[i].channels.isExpanded =
                                       !dataRow[i].channels.isExpanded
@@ -119,7 +123,6 @@
                                 <td style="width: 5%">
                                     {{i + 1}}
                                 </td>
-                                <td style="width: 15%">{{ this.itemData.name }}</td>
                                 <td style="width: 15%">{{ item?.name }}</td>
                                 <td style="width: 20%">
                                     {{ item?.detail}}
@@ -137,18 +140,15 @@
                                 </td>
                             </tr>
                             <ng-container *ngIf="dataRow[i].channels.isExpanded">
-                                <tr
-                                    class="text-lx text-center text-white uppercase bg-gray-400 dark:bg-gray-700 dark:text-gray-400 h-10">
+                                <tr class="text-lx text-center text-white uppercase bg-gray-400 dark:bg-gray-700 dark:text-gray-400 h-10">
                                     <th></th>
                                     <th>ลำดับ</th>
-                                    <th>ชื่อชั้น</th>
                                     <th>ชื่อช่อง</th>
                                     <th>รายละเอียด</th>
                                     <th>วันที่สร้าง</th>
                                     <th>จัดการ</th>
                                 </tr>
-                                <tr class="text-lx text-center text-gray-700 uppercase bg-gray-100 dark:bg-gray-700 dark:text-gray-400 h-10  border-b"
-                                    *ngFor="
+                                <tr class="text-lx text-center text-gray-700 uppercase bg-gray-100 dark:bg-gray-700 dark:text-gray-400 h-10  border-b" *ngFor="
                                     let chanel of dataRow[i].channels;
                                     let j = index
                                   ">
@@ -158,7 +158,6 @@
                                     <td style="width: 5%">
                                         {{j + 1}}
                                     </td>
-                                    <td style="width: 15%">{{ dataRow[i].name }}</td>
                                     <td style="width: 15%">{{ chanel?.name }}</td>
                                     <td style="width: 20%">
                                         {{ chanel?.detail}}
@@ -175,9 +174,8 @@
                                         </button>
                                     </td>
                                 </tr>
-                                <tr class="text-lx text-center text-gray-700 uppercase bg-gray-100 dark:bg-gray-700 dark:text-gray-400 h-10  border-b"
-                                    *ngIf="dataRow[i]?.channels.length == 0">
-                                    <td colspan="7">
+                                <tr class="text-lx text-center text-gray-700 uppercase bg-gray-100 dark:bg-gray-700 dark:text-gray-400 h-10  border-b" *ngIf="dataRow[i]?.channels.length == 0">
+                                    <td colspan="6" *ngIf="dataRow[i]?.channels.length == 0">
                                         ไม่มีข้อมูลช่อง
                                     </td>
 
@@ -191,16 +189,5 @@
             </div>
         </div>
     </div>
-    <div class="flex items-center justify-end w-full border-t px-8 py-4">
-        <div class="flex items-center justify-end">
-            <a class="ml-4" mat-flat-button [routerLink]="['/shelf/list']">
-                <mat-icon svgIcon="heroicons_solid:x"></mat-icon>
-                ยกเลิก
-            </a>
-            <button class="px-6 ml-3 mat-primary" mat-flat-button (click)="update()">
-                <mat-icon svgIcon="heroicons_solid:check"></mat-icon>
-                ยืนยัน
-            </button>
-        </div>
-    </div>
+
 </div>

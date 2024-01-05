@@ -117,8 +117,8 @@ export class NewComponent implements OnInit, AfterViewInit, OnDestroy {
             tax: '',
             address: '',
         });
-        this.GetCate();
-        this.GetShelf();
+        // this.GetCate();
+        // this.GetShelf();
     }
 
     onChangeShelf(event: any) {

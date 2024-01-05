@@ -38,6 +38,8 @@ import { ListComponent } from './list/list.component';
 import { NewComponent } from './new/new.component';
 import { EditComponent } from './edit/edit.component';
 import { DataTablesModule } from 'angular-datatables';
+import {MatAutocompleteModule} from '@angular/material/autocomplete';
+import {AsyncPipe} from '@angular/common';
 
 @NgModule({
     declarations: [PageComponent, ListComponent, NewComponent, EditComponent],
@@ -74,6 +76,8 @@ import { DataTablesModule } from 'angular-datatables';
         MatExpansionModule,
         NgxMatTimepickerModule.setLocale('en-GB'),
         DataTablesModule,
+        MatAutocompleteModule,
+        AsyncPipe
     ],
 })
 export class Module {}

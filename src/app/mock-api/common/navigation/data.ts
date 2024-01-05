@@ -35,7 +35,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
             },
 
             {
-                title: 'ใบงาน',
+                title: 'ใบสั่งงาน',
                 type: 'basic',
                 icon: 'heroicons_outline:emoji-happy',
                 link: '/order/list',
